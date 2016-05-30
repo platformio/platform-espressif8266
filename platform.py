@@ -19,7 +19,7 @@ class EspressifPlatform(BasePlatform):
 
     def configure_default_packages(self, variables, targets):
         if not variables.get("framework"):
-            self.get_packages()['sdk-esp8266']['optional'] = False
+            self.packages['sdk-esp8266']['optional'] = False
 
         return BasePlatform.configure_default_packages(
             self, variables, targets)
