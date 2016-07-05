@@ -40,7 +40,7 @@
     "framework-arduinoespressif": {
       "type": "framework",
       "optional": true,
-      "version": "~1.20200.0"
+      "version": "~1.20300.0"
     },
     "framework-simba": {
       "type": "framework",
@@ -49,7 +49,7 @@
     },
     "tool-esptool": {
       "type": "uploader",
-      "version": "~1.408.0"
+      "version": "~1.409.0"
     },
     "tool-mkspiffs": {
       "type": "uploader",
