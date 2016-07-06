@@ -41,8 +41,11 @@ env.Prepend(
         join("$BUILD_DIR", "FrameworkArduino")
     ],
     LIBPATH=[join(FRAMEWORK_DIR, "tools", "sdk", "lib")],
-    LIBS=["mesh", "wpa2", "smartconfig", "pp", "main", "wpa", "lwip",
-          "net80211", "wps", "crypto", "phy", "hal", "axtls", "gcc", "m"]
+    LIBS=[
+        "mesh", "wpa2", "smartconfig", "pp", "main", "wpa", "lwip",
+        "net80211", "wps", "crypto", "phy", "hal", "axtls", "gcc",
+        "m", "stdc++"
+    ]
 )
 
 env.Append(

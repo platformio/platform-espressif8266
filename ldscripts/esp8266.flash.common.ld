@@ -81,6 +81,8 @@ SECTIONS
     *(.sdata2.*)
     *(.gnu.linkonce.s2.*)
     *(.jcr)
+    . = ALIGN(4);
+    _Pri_3_HandlerAddress = ABSOLUTE(.);
     _data_end = ABSOLUTE(.);
   } >dram0_0_seg :dram0_0_phdr
 
@@ -153,6 +155,7 @@ SECTIONS
   .irom0.text : ALIGN(4)
   {
     _irom0_text_start = ABSOLUTE(.);
+    *(.ver_number)
     *.pioenvs\\*\\lib*.a:(EXCLUDE_FILE (umm_malloc.o) .literal*, \
     EXCLUDE_FILE (umm_malloc.o) .text*)
     *.pioenvs/*/lib*.a:(EXCLUDE_FILE (umm_malloc.o) .literal*, \
