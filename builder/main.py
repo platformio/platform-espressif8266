@@ -212,7 +212,7 @@ if "uploadfs" in COMMAND_LINE_TARGETS:
 # Framework and SDK specific configuration
 #
 
-if "FRAMEWORK" in env:
+if "PIOFRAMEWORK" in env:
     env.Append(
         LINKFLAGS=[
             "-Wl,-wrap,system_restart_local",
@@ -324,7 +324,7 @@ if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
     AlwaysBuild(target_firm)
 
 elif "uploadlazy" in COMMAND_LINE_TARGETS:
-    if "FRAMEWORK" not in env:
+    if "PIOFRAMEWORK" not in env:
         target_firm = [
             join("$BUILD_DIR", "firmware_00000.bin"),
             join("$BUILD_DIR", "firmware_40000.bin")
@@ -332,7 +332,7 @@ elif "uploadlazy" in COMMAND_LINE_TARGETS:
     else:
         target_firm = join("$BUILD_DIR", "firmware.bin")
 else:
-    if "FRAMEWORK" not in env:
+    if "PIOFRAMEWORK" not in env:
         target_firm = env.ElfToBin(
             [join("$BUILD_DIR", "firmware_00000"),
              join("$BUILD_DIR", "firmware_40000")], target_elf)

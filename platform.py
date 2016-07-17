@@ -18,7 +18,7 @@ from platformio.managers.platform import PlatformBase
 class EspressifPlatform(PlatformBase):
 
     def configure_default_packages(self, variables, targets):
-        if not variables.get("framework"):
+        if not variables.get("pioframework"):
             self.packages['sdk-esp8266']['optional'] = False
 
         return PlatformBase.configure_default_packages(
