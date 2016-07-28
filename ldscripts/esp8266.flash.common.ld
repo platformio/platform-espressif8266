@@ -156,7 +156,11 @@ SECTIONS
   {
     _irom0_text_start = ABSOLUTE(.);
     *(.ver_number)
-    *.pioenvs\\*\\lib\\*.a:(EXCLUDE_FILE (umm_malloc.o) .literal*, \
+    *.pioenvs\\*\\lib*.a:(EXCLUDE_FILE (umm_malloc.o) .literal*, \
+    EXCLUDE_FILE (umm_malloc.o) .text*)
+    *.pioenvs/*/lib*.a:(EXCLUDE_FILE (umm_malloc.o) .literal*, \
+    EXCLUDE_FILE (umm_malloc.o) .text*)
+    *.pioenvs\\*\\lib\*.a:(EXCLUDE_FILE (umm_malloc.o) .literal*, \
     EXCLUDE_FILE (umm_malloc.o) .text*)
     *.pioenvs/*/lib/*.a:(EXCLUDE_FILE (umm_malloc.o) .literal*, \
     EXCLUDE_FILE (umm_malloc.o) .text*)
@@ -205,6 +209,8 @@ SECTIONS
     *(.init.literal)
     *(.init)
     *(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
+    *.pioenvs\\*\\lib*.a:(.iram.text)
+    *.pioenvs/*/lib*.a:(.iram.text)
     *.pioenvs\\*\\lib\\*.a:(.iram.text)
     *.pioenvs/*/lib/*.a:(.iram.text)
     *.pioenvs\\*\\src\\*.o(.iram.text)
