@@ -34,7 +34,10 @@ FRAMEWORK_VERSION = platform.get_package_version("framework-arduinoespressif")
 assert isdir(FRAMEWORK_DIR)
 
 env.Prepend(
-    CPPDEFINES=["ARDUINO=%s" % FRAMEWORK_VERSION.split(".")[1]],
+    CPPDEFINES=[
+        "ARDUINO=%s" % FRAMEWORK_VERSION.split(".")[1],
+        "LWIP_OPEN_SRC"
+    ],
     CPPPATH=[
         join(FRAMEWORK_DIR, "tools", "sdk", "include"),
         join(FRAMEWORK_DIR, "tools", "sdk", "lwip", "include"),
@@ -42,7 +45,7 @@ env.Prepend(
     ],
     LIBPATH=[join(FRAMEWORK_DIR, "tools", "sdk", "lib")],
     LIBS=[
-        "mesh", "wpa2", "smartconfig", "pp", "main", "wpa", "lwip",
+        "mesh", "wpa2", "smartconfig", "pp", "main", "wpa", "lwip_gcc",
         "net80211", "wps", "crypto", "phy", "hal", "axtls", "gcc",
         "m", "stdc++"
     ]
