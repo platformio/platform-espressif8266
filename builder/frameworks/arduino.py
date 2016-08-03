@@ -27,7 +27,7 @@ from os.path import isdir, join
 from SCons.Script import DefaultEnvironment
 
 env = DefaultEnvironment()
-platform = env.DevPlatform()
+platform = env.PioPlatform()
 
 FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoespressif")
 FRAMEWORK_VERSION = platform.get_package_version("framework-arduinoespressif")

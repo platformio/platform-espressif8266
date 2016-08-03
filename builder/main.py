@@ -48,7 +48,7 @@ def _get_board_f_flash(env):
 
 
 env = DefaultEnvironment()
-platform = env.DevPlatform()
+platform = env.PioPlatform()
 
 env.Replace(
     __get_flash_size=_get_flash_size,
