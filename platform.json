@@ -20,7 +20,8 @@
   "packageRepositories": [
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
     "https://sourceforge.net/projects/platformio-storage/files/packages/manifest.json/download",
-    "http://dl.platformio.org/packages/manifest.json"
+    "http://dl.platformio.org/packages/manifest.json",
+    "https://raw.githubusercontent.com/eerimoq/simba/master/make/platformio/manifest.json"
   ],
   "frameworks": {
     "arduino": {
@@ -45,7 +46,7 @@
     "framework-simba": {
       "type": "framework",
       "optional": true,
-      "version": "^1.500.0"
+      "version": ">=7.0.0"
     },
     "tool-esptool": {
       "type": "uploader",
