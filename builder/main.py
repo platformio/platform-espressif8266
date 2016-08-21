@@ -122,7 +122,6 @@ env.Replace(
     UPLOADEROTA=join("$FRAMEWORK_ARDUINOESP8266_DIR", "tools", "espota.py"),
 
     UPLOADERFLAGS=[
-        "-vv",
         "-cd", "$UPLOAD_RESETMETHOD",
         "-cb", "$UPLOAD_SPEED",
         "-cp", '"$UPLOAD_PORT"'
@@ -151,6 +150,9 @@ env.Replace(
 env.Append(
     ASFLAGS=env.get("CCFLAGS", [])[:]
 )
+
+if not env.GetOption("silent"):
+    env.Prepend(UPLOADERFLAGS=["-vv"])
 
 
 #
