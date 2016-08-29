@@ -16,5 +16,5 @@ Espressif Systems is a privately held fabless semiconductor company. They provid
 > platformio platform install espressif
 
 # install development version
-> platformio platform install https://github.com/platformio/platform-espressif/archive/develop.zip
+> platformio platform install https://github.com/platformio/platform-espressif.git
 ```
