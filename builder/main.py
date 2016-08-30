@@ -21,8 +21,8 @@
 import re
 from os.path import join
 
-from SCons.Script import (COMMAND_LINE_TARGETS, AlwaysBuild, Builder, Default,
-                          DefaultEnvironment)
+from SCons.Script import (ARGUMENTS, COMMAND_LINE_TARGETS, AlwaysBuild,
+                          Builder, Default, DefaultEnvironment)
 
 
 def _get_flash_size(env):
@@ -151,7 +151,7 @@ env.Append(
     ASFLAGS=env.get("CCFLAGS", [])[:]
 )
 
-if not env.GetOption("silent"):
+if int(ARGUMENTS.get("PIOVERBOSE", 0)):
     env.Prepend(UPLOADERFLAGS=["-vv"])
 
 
@@ -189,14 +189,14 @@ def _fetch_spiffs_size(target, source, env):
 env.Append(
     BUILDERS=dict(
         DataToBin=Builder(
-            action=" ".join([
+            action=env.VerboseAction(" ".join([
                 '"$MKSPIFFSTOOL"',
                 "-c", "$SOURCES",
                 "-p", "${int(SPIFFS_PAGE, 16)}",
                 "-b", "${int(SPIFFS_BLOCK, 16)}",
                 "-s", "${int(SPIFFS_END, 16) - int(SPIFFS_START, 16)}",
                 "$TARGET"
-            ]),
+            ]), "Building SPIFFS image from '$SOURCES' directory to $TARGET"),
             emitter=_fetch_spiffs_size,
             source_factory=env.Dir,
             suffix=".bin"
@@ -223,7 +223,7 @@ if "PIOFRAMEWORK" in env:
 
         BUILDERS=dict(
             ElfToBin=Builder(
-                action=" ".join([
+                action=env.VerboseAction(" ".join([
                     '"$OBJCOPY"',
                     "-eo",
                     '"%s"' % join("$FRAMEWORK_ARDUINOESP8266_DIR",
@@ -241,7 +241,7 @@ if "PIOFRAMEWORK" in env:
                     "-bs", ".data",
                     "-bs", ".rodata",
                     "-bc", "-ec"
-                ]),
+                ]), "Building $TARGET"),
                 suffix=".bin"
             )
         )
@@ -270,7 +270,7 @@ else:
 
         BUILDERS=dict(
             ElfToBin=Builder(
-                action=" ".join([
+                action=env.VerboseAction(" ".join([
                     '"$OBJCOPY"',
                     "-eo", "$SOURCES",
                     "-bo", "${TARGETS[0]}",
@@ -284,7 +284,7 @@ else:
                     "-eo", "$SOURCES",
                     "-es", ".irom0.text", "${TARGETS[1]}",
                     "-ec", "-v"
-                ]),
+                ]), "Building $TARGET"),
                 suffix=".bin"
             )
         )
@@ -345,7 +345,9 @@ else:
 # Target: Print binary size
 #
 
-target_size = env.Alias("size", target_elf, "$SIZEPRINTCMD")
+target_size = env.Alias(
+    "size", target_elf,
+    env.VerboseAction("$SIZEPRINTCMD", "Calculating size $SOURCE"))
 AlwaysBuild(target_size)
 
 #
@@ -354,17 +356,13 @@ AlwaysBuild(target_size)
 
 target_upload = env.Alias(
     ["upload", "uploadlazy", "uploadfs"], target_firm,
-    [env.AutodetectUploadPort, "$UPLOADCMD"])
+    [env.VerboseAction(env.AutodetectUploadPort, "Looking for upload port..."),
+     env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")])
 env.AlwaysBuild(target_upload)
 
-#
-# Target: Unit Testing
-#
-
-AlwaysBuild(env.Alias("test", [target_firm, target_size]))
 
 #
-# Target: Define targets
+# Default targets
 #
 
 Default([target_firm, target_size])
