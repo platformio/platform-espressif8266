@@ -4,19 +4,16 @@
   "description": "Espressif Systems is a privately held fabless semiconductor company. They provide wireless communications and Wi-Fi chips which are widely used in mobile devices and the Internet of Things applications.",
   "url": "https://espressif.com/",
   "homepage": "http://platformio.org/platforms/espressif",
-  "license": {
-    "type": "Apache-2.0",
-    "url": "http://opensource.org/licenses/apache2.0.php"
-  },
+  "license": "Apache-2.0",
   "engines": {
-    "platformio": "~3.0.0",
+    "platformio": "^3.0.0",
     "scons": ">=2.3.0,<2.6.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/platformio/platform-espressif.git"
   },
-  "version": "0.1.2",
+  "version": "1.0.0",
   "packageRepositories": [
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
     "https://sourceforge.net/projects/platformio-storage/files/packages/manifest.json/download",
