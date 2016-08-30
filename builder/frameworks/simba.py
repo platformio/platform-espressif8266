@@ -41,9 +41,14 @@ def LookupSources(env, variant_dir, src_dir, duplicate=True, src_filter=None):
     return env.CollectBuildFiles(variant_dir, src_dir, src_filter, duplicate)
 
 
+def VariantDirWrap(env, variant_dir, src_dir, duplicate=False):
+    env.VariantDir(variant_dir, src_dir, duplicate)
+
+
 env = DefaultEnvironment()
 
 env.AddMethod(LookupSources)
+env.AddMethod(VariantDirWrap)
 
 env.Replace(
     PLATFORMFW_DIR=env.PioPlatform().get_package_dir("framework-simba")
