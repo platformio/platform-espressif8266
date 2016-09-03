@@ -29,8 +29,9 @@ from SCons.Script import DefaultEnvironment
 env = DefaultEnvironment()
 platform = env.PioPlatform()
 
-FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoespressif")
-FRAMEWORK_VERSION = platform.get_package_version("framework-arduinoespressif")
+FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoespressif8266")
+FRAMEWORK_VERSION = platform.get_package_version(
+    "framework-arduinoespressif8266")
 assert isdir(FRAMEWORK_DIR)
 
 env.Prepend(
