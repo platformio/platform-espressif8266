@@ -1,20 +1,20 @@
-# Espressif: development platform for [PlatformIO](http://platformio.org)
-[![Build Status](https://travis-ci.org/platformio/platform-espressif.svg?branch=develop)](https://travis-ci.org/platformio/platform-espressif)
-[![Build status](https://ci.appveyor.com/api/projects/status/yosdb0a87s5rb7b5/branch/develop?svg=true)](https://ci.appveyor.com/project/ivankravets/platform-espressif/branch/develop)
+# Espressif 8266: development platform for [PlatformIO](http://platformio.org)
+[![Build Status](https://travis-ci.org/platformio/platform-espressif8266.svg?branch=develop)](https://travis-ci.org/platformio/platform-espressif8266)
+[![Build status](https://ci.appveyor.com/api/projects/status/yosdb0a87s5rb7b5/branch/develop?svg=true)](https://ci.appveyor.com/project/ivankravets/platform-espressif8266/branch/develop)
 
 Espressif Systems is a privately held fabless semiconductor company. They provide wireless communications and Wi-Fi chips which are widely used in mobile devices and the Internet of Things applications.
 
-* [Home](http://platformio.org/platforms/espressif) (home page in PlatformIO Platform Registry)
-* [Documentation](http://docs.platformio.org/en/latest/platforms/espressif.html) (advanced usage, packages, boards, frameworks, etc.)
+* [Home](http://platformio.org/platforms/espressif8266) (home page in PlatformIO Platform Registry)
+* [Documentation](http://docs.platformio.org/en/latest/platforms/espressif8266.html) (advanced usage, packages, boards, frameworks, etc.)
 
 # Usage
 
 1. [Install PlatformIO CLI](http://docs.platformio.org/en/latest/installation.html)
-2. Install Espressif development platform:
+2. Install Espressif 8266 development platform:
 ```bash
-# isntall the latest stable version
-> platformio platform install espressif
+# install the latest stable version
+> platformio platform install espressif8266
 
 # install development version
-> platformio platform install https://github.com/platformio/platform-espressif.git
+> platformio platform install https://github.com/platformio/platform-espressif8266.git
 ```

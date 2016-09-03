@@ -1,9 +1,9 @@
 {
-  "name": "espressif",
-  "title": "Espressif",
+  "name": "espressif8266",
+  "title": "Espressif 8266",
   "description": "Espressif Systems is a privately held fabless semiconductor company. They provide wireless communications and Wi-Fi chips which are widely used in mobile devices and the Internet of Things applications.",
   "url": "https://espressif.com/",
-  "homepage": "http://platformio.org/platforms/espressif",
+  "homepage": "http://platformio.org/platforms/espressif8266",
   "license": "Apache-2.0",
   "engines": {
     "platformio": "^3.0.0",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/platformio/platform-espressif.git"
+    "url": "https://github.com/platformio/platform-espressif8266.git"
   },
   "version": "1.0.1",
   "packageRepositories": [
@@ -22,7 +22,7 @@
   ],
   "frameworks": {
     "arduino": {
-      "package": "framework-arduinoespressif",
+      "package": "framework-arduinoespressif8266",
       "script": "builder/frameworks/arduino.py"
     },
     "simba": {
@@ -35,7 +35,7 @@
       "type": "toolchain",
       "version": "~1.40802.0"
     },
-    "framework-arduinoespressif": {
+    "framework-arduinoespressif8266": {
       "type": "framework",
       "optional": true,
       "version": "~1.20300.0"

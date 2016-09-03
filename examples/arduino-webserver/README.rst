@@ -13,14 +13,14 @@ How to build PlatformIO based project
 =====================================
 
 1. `Install PlatformIO <http://docs.platformio.org/en/latest/installation.html>`_
-2. Download `development platform with examples <https://github.com/platformio/platform-espressif/archive/develop.zip>`_
+2. Download `development platform with examples <https://github.com/platformio/platform-espressif8266/archive/develop.zip>`_
 3. Extract ZIP archive
 4. Run these commands:
 
 .. code-block:: bash
 
     # Change directory to example
-    > cd platform-espressif/examples/arduino-webserver
+    > cd platform-espressif8266/examples/arduino-webserver
 
     # Build project
     > platformio run
