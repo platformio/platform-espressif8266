@@ -14,7 +14,7 @@
   ], 
   "name": "ESP-WROOM-02", 
   "upload": {
-    "maximum_ram_size": 51200, 
+    "maximum_ram_size": 81920, 
     "maximum_size": 4194304, 
     "require_upload_port": true, 
     "resetmethod": "nodemcu", 
