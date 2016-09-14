@@ -42,13 +42,18 @@ env.Prepend(
     CPPPATH=[
         join(FRAMEWORK_DIR, "tools", "sdk", "include"),
         join(FRAMEWORK_DIR, "tools", "sdk", "lwip", "include"),
+        join(FRAMEWORK_DIR, "tools", "sdk", "libc",
+             "xtensa-lx106-elf", "include"),
         join(FRAMEWORK_DIR, "cores", env.BoardConfig().get("build.core"))
     ],
-    LIBPATH=[join(FRAMEWORK_DIR, "tools", "sdk", "lib")],
+    LIBPATH=[
+        join(FRAMEWORK_DIR, "tools", "sdk", "lib"),
+        join(FRAMEWORK_DIR, "tools", "sdk", "libc", "xtensa-lx106-elf", "lib")
+    ],
     LIBS=[
-        "mesh", "wpa2", "smartconfig", "pp", "main", "wpa", "lwip_gcc",
-        "net80211", "wps", "crypto", "phy", "hal", "axtls", "gcc",
-        "m", "stdc++"
+        "hal", "phy", "pp", "net80211", "lwip_gcc", "wpa", "crypto",
+        "main", "wps", "axtls", "espnow", "smartconfig", "mesh", "wpa2",
+        "stdc++", "m", "c", "gcc"
     ]
 )
 
@@ -76,9 +81,7 @@ if "build.variant" in env.BoardConfig():
         join(FRAMEWORK_DIR, "variants", env.BoardConfig().get("build.variant"))
     ))
 
-envsafe = env.Clone()
-
-libs.append(envsafe.BuildLibrary(
+libs.append(env.BuildLibrary(
     join("$BUILD_DIR", "FrameworkArduino"),
     join(FRAMEWORK_DIR, "cores", env.BoardConfig().get("build.core"))
 ))
