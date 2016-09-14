@@ -3,6 +3,7 @@ python:
   - "2.7"
 
 env:
+  - PLATFORMIO_PROJECT_DIR=examples/arduino-asyncudp
   - PLATFORMIO_PROJECT_DIR=examples/arduino-blink
   - PLATFORMIO_PROJECT_DIR=examples/arduino-webserver
   - PLATFORMIO_PROJECT_DIR=examples/arduino-wifiscan
