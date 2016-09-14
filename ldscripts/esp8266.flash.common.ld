@@ -169,6 +169,7 @@ SECTIONS
     EXCLUDE_FILE (umm_malloc.o) .text*)
     *.pioenvs/*/src/*.o(EXCLUDE_FILE (umm_malloc.o) .literal*, \
     EXCLUDE_FILE (umm_malloc.o) .text*)
+	*libc.a:(.literal .text .literal.* .text.*)
     *libm.a:(.literal .text .literal.* .text.*)
     *libgcc.a:_umoddi3.o(.literal .text)
     *libgcc.a:_udivdi3.o(.literal .text)

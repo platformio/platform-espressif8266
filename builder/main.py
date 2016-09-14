@@ -102,6 +102,8 @@ env.Replace(
         "-nostdlib",
         "-Wl,--no-check-sections",
         "-u", "call_user_start",
+        "-u", "_printf_float",
+        "-u", "_scanf_float",
         "-Wl,-static",
         "-Wl,--gc-sections"
     ],

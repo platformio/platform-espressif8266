@@ -18,7 +18,16 @@
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
     "https://sourceforge.net/projects/platformio-storage/files/packages/manifest.json/download",
     "http://dl.platformio.org/packages/manifest.json",
-    "https://raw.githubusercontent.com/eerimoq/simba/master/make/platformio/manifest.json"
+    "https://raw.githubusercontent.com/eerimoq/simba/master/make/platformio/manifest.json",
+    {
+      "framework-arduinoespressif8266": [
+        {
+          "url": "https://github.com/platformio/Arduino/archive/master.zip",
+          "version": "1.20400.0-dev",
+          "system": "*"
+        }
+      ]
+    }
   ],
   "frameworks": {
     "arduino": {
@@ -38,7 +47,7 @@
     "framework-arduinoespressif8266": {
       "type": "framework",
       "optional": true,
-      "version": "https://github.com/platformio/Arduino.git"
+      "version": "1.20400.0-dev"
     },
     "framework-simba": {
       "type": "framework",
