@@ -14,10 +14,6 @@
 
 # pylint: disable=redefined-outer-name
 
-"""
-    Builder for Espressif MCUs
-"""
-
 import re
 from os.path import join
 
@@ -225,9 +221,9 @@ if "PIOFRAMEWORK" in env:
             ElfToBin=Builder(
                 action=env.VerboseAction(" ".join([
                     '"$OBJCOPY"',
-                    "-eo",
-                    '"%s"' % join("$FRAMEWORK_ARDUINOESP8266_DIR",
-                                  "bootloaders", "eboot", "eboot.elf"),
+                    "-eo", join(
+                        "$FRAMEWORK_ARDUINOESP8266_DIR", "bootloaders",
+                        "eboot", "eboot.elf"),
                     "-bo", "$TARGET",
                     "-bm", "$BOARD_FLASH_MODE",
                     "-bf", "${__get_board_f_flash(__env__)}",
@@ -311,22 +307,14 @@ else:
     )
 
 #
-# Target: Build executable and linkable firmware
+# Target: Build executable and linkable firmware or SPIFFS image
 #
 
-target_elf = env.BuildProgram()
-
-#
-# Target: Build the .hex or SPIFFS image
-#
-
-if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
-    target_firm = env.DataToBin(
-        join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
-    AlwaysBuild(target_firm)
-
-elif "uploadlazy" in COMMAND_LINE_TARGETS:
-    if "PIOFRAMEWORK" not in env:
+target_elf = None
+if "nobuild" in COMMAND_LINE_TARGETS:
+    if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        target_firm = join("$BUILD_DIR", "spiffs.bin")
+    elif "PIOFRAMEWORK" not in env:
         target_firm = [
             join("$BUILD_DIR", "firmware_00000.bin"),
             join("$BUILD_DIR", "firmware_40000.bin")
@@ -334,12 +322,23 @@ elif "uploadlazy" in COMMAND_LINE_TARGETS:
     else:
         target_firm = join("$BUILD_DIR", "firmware.bin")
 else:
-    if "PIOFRAMEWORK" not in env:
-        target_firm = env.ElfToBin(
-            [join("$BUILD_DIR", "firmware_00000"),
-             join("$BUILD_DIR", "firmware_40000")], target_elf)
+    if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        target_firm = env.DataToBin(
+            join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
+        AlwaysBuild(target_firm)
+        AlwaysBuild(env.Alias("buildfs", target_firm))
     else:
-        target_firm = env.ElfToBin(join("$BUILD_DIR", "firmware"), target_elf)
+        target_elf = env.BuildProgram()
+        if "PIOFRAMEWORK" not in env:
+            target_firm = env.ElfToBin([join("$BUILD_DIR", "firmware_00000"),
+                                        join("$BUILD_DIR", "firmware_40000")],
+                                       target_elf)
+        else:
+            target_firm = env.ElfToBin(
+                join("$BUILD_DIR", "firmware"), target_elf)
+    target_buildprog = env.Alias("buildprog", target_firm)
+
+AlwaysBuild(env.Alias("nobuild", target_firm))
 
 #
 # Target: Print binary size
@@ -355,7 +354,7 @@ AlwaysBuild(target_size)
 #
 
 target_upload = env.Alias(
-    ["upload", "uploadlazy", "uploadfs"], target_firm,
+    ["upload", "uploadfs"], target_firm,
     [env.VerboseAction(env.AutodetectUploadPort, "Looking for upload port..."),
      env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")])
 env.AlwaysBuild(target_upload)
@@ -365,4 +364,4 @@ env.AlwaysBuild(target_upload)
 # Default targets
 #
 
-Default([target_firm, target_size])
+Default([target_buildprog, target_size])
