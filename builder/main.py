@@ -323,6 +323,10 @@ if "nobuild" in COMMAND_LINE_TARGETS:
         target_firm = join("$BUILD_DIR", "firmware.bin")
 else:
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        # append specified LD_SCRIPT
+        if ("LDSCRIPT_PATH" in env and
+                not any(["-Wl,-T" in f for f in env['LINKFLAGS']])):
+            env.Append(LINKFLAGS=['-Wl,-T"$LDSCRIPT_PATH"'])
         target_firm = env.DataToBin(
             join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
         AlwaysBuild(target_firm)
