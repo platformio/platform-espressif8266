@@ -323,10 +323,14 @@ if "nobuild" in COMMAND_LINE_TARGETS:
         target_firm = join("$BUILD_DIR", "firmware.bin")
 else:
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        # @TODO, replace with env.ProcessAllFlags() after PIO 3.2 release
+        env.ProcessFlags(env.get("BUILD_FLAGS"))
         # append specified LD_SCRIPT
         if ("LDSCRIPT_PATH" in env and
                 not any(["-Wl,-T" in f for f in env['LINKFLAGS']])):
             env.Append(LINKFLAGS=['-Wl,-T"$LDSCRIPT_PATH"'])
+        ###
+
         target_firm = env.DataToBin(
             join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
         AlwaysBuild(target_firm)
