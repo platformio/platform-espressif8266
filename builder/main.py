@@ -14,10 +14,6 @@
 
 # pylint: disable=redefined-outer-name
 
-"""
-    Builder for Espressif MCUs
-"""
-
 import re
 from os.path import join
 
@@ -161,7 +157,7 @@ if int(ARGUMENTS.get("PIOVERBOSE", 0)):
 # SPIFFS
 #
 
-def _fetch_spiffs_size(target, source, env):
+def fetch_spiffs_size(env):
     spiffs_re = re.compile(
         r"PROVIDE\s*\(\s*_SPIFFS_(\w+)\s*=\s*(0x[\dA-F]+)\s*\)")
     with open(env.GetActualLDScript()) as f:
@@ -185,6 +181,9 @@ def _fetch_spiffs_size(target, source, env):
 
         env[k] = hex(_value)
 
+
+def __fetch_spiffs_size(target, source, env):
+    fetch_spiffs_size(env)
     return (target, source)
 
 
@@ -199,7 +198,7 @@ env.Append(
                 "-s", "${int(SPIFFS_END, 16) - int(SPIFFS_START, 16)}",
                 "$TARGET"
             ]), "Building SPIFFS image from '$SOURCES' directory to $TARGET"),
-            emitter=_fetch_spiffs_size,
+            emitter=__fetch_spiffs_size,
             source_factory=env.Dir,
             suffix=".bin"
         )
@@ -313,22 +312,25 @@ else:
     )
 
 #
-# Target: Build executable and linkable firmware
+# Target: Build executable and linkable firmware or SPIFFS image
 #
 
-target_elf = env.BuildProgram()
 
-#
-# Target: Build the .hex or SPIFFS image
-#
+def __tmp_hook_before_pio_3_2():
+    env.ProcessFlags(env.get("BUILD_FLAGS"))
+    # append specified LD_SCRIPT
+    if ("LDSCRIPT_PATH" in env and
+            not any(["-Wl,-T" in f for f in env['LINKFLAGS']])):
+        env.Append(LINKFLAGS=['-Wl,-T"$LDSCRIPT_PATH"'])
 
-if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
-    target_firm = env.DataToBin(
-        join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
-    AlwaysBuild(target_firm)
 
-elif "uploadlazy" in COMMAND_LINE_TARGETS:
-    if "PIOFRAMEWORK" not in env:
+target_elf = None
+if "nobuild" in COMMAND_LINE_TARGETS:
+    if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        __tmp_hook_before_pio_3_2()
+        fetch_spiffs_size(env)
+        target_firm = join("$BUILD_DIR", "spiffs.bin")
+    elif "PIOFRAMEWORK" not in env:
         target_firm = [
             join("$BUILD_DIR", "firmware_00000.bin"),
             join("$BUILD_DIR", "firmware_40000.bin")
@@ -336,12 +338,24 @@ elif "uploadlazy" in COMMAND_LINE_TARGETS:
     else:
         target_firm = join("$BUILD_DIR", "firmware.bin")
 else:
-    if "PIOFRAMEWORK" not in env:
-        target_firm = env.ElfToBin(
-            [join("$BUILD_DIR", "firmware_00000"),
-             join("$BUILD_DIR", "firmware_40000")], target_elf)
+    if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        __tmp_hook_before_pio_3_2()
+        target_firm = env.DataToBin(
+            join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
+        AlwaysBuild(target_firm)
+        AlwaysBuild(env.Alias("buildfs", target_firm))
     else:
-        target_firm = env.ElfToBin(join("$BUILD_DIR", "firmware"), target_elf)
+        target_elf = env.BuildProgram()
+        if "PIOFRAMEWORK" not in env:
+            target_firm = env.ElfToBin([join("$BUILD_DIR", "firmware_00000"),
+                                        join("$BUILD_DIR", "firmware_40000")],
+                                       target_elf)
+        else:
+            target_firm = env.ElfToBin(
+                join("$BUILD_DIR", "firmware"), target_elf)
+
+target_buildprog = env.Alias("buildprog", target_firm)
+AlwaysBuild(env.Alias("nobuild", target_firm))
 
 #
 # Target: Print binary size
@@ -357,7 +371,7 @@ AlwaysBuild(target_size)
 #
 
 target_upload = env.Alias(
-    ["upload", "uploadlazy", "uploadfs"], target_firm,
+    ["upload", "uploadfs"], target_firm,
     [env.VerboseAction(env.AutodetectUploadPort, "Looking for upload port..."),
      env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")])
 env.AlwaysBuild(target_upload)
@@ -367,4 +381,4 @@ env.AlwaysBuild(target_upload)
 # Default targets
 #
 
-Default([target_firm, target_size])
+Default([target_buildprog, target_size])
