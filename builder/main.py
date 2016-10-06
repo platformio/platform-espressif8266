@@ -155,7 +155,7 @@ if int(ARGUMENTS.get("PIOVERBOSE", 0)):
 # SPIFFS
 #
 
-def _fetch_spiffs_size(target, source, env):
+def fetch_spiffs_size(env):
     spiffs_re = re.compile(
         r"PROVIDE\s*\(\s*_SPIFFS_(\w+)\s*=\s*(0x[\dA-F]+)\s*\)")
     with open(env.GetActualLDScript()) as f:
@@ -179,6 +179,9 @@ def _fetch_spiffs_size(target, source, env):
 
         env[k] = hex(_value)
 
+
+def __fetch_spiffs_size(target, source, env):
+    fetch_spiffs_size(env)
     return (target, source)
 
 
@@ -193,7 +196,7 @@ env.Append(
                 "-s", "${int(SPIFFS_END, 16) - int(SPIFFS_START, 16)}",
                 "$TARGET"
             ]), "Building SPIFFS image from '$SOURCES' directory to $TARGET"),
-            emitter=_fetch_spiffs_size,
+            emitter=__fetch_spiffs_size,
             source_factory=env.Dir,
             suffix=".bin"
         )
@@ -310,9 +313,20 @@ else:
 # Target: Build executable and linkable firmware or SPIFFS image
 #
 
+
+def __tmp_hook_before_pio_3_2():
+    env.ProcessFlags(env.get("BUILD_FLAGS"))
+    # append specified LD_SCRIPT
+    if ("LDSCRIPT_PATH" in env and
+            not any(["-Wl,-T" in f for f in env['LINKFLAGS']])):
+        env.Append(LINKFLAGS=['-Wl,-T"$LDSCRIPT_PATH"'])
+
+
 target_elf = None
 if "nobuild" in COMMAND_LINE_TARGETS:
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        __tmp_hook_before_pio_3_2()
+        fetch_spiffs_size(env)
         target_firm = join("$BUILD_DIR", "spiffs.bin")
     elif "PIOFRAMEWORK" not in env:
         target_firm = [
@@ -323,14 +337,7 @@ if "nobuild" in COMMAND_LINE_TARGETS:
         target_firm = join("$BUILD_DIR", "firmware.bin")
 else:
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
-        # @TODO, replace with env.ProcessAllFlags() after PIO 3.2 release
-        env.ProcessFlags(env.get("BUILD_FLAGS"))
-        # append specified LD_SCRIPT
-        if ("LDSCRIPT_PATH" in env and
-                not any(["-Wl,-T" in f for f in env['LINKFLAGS']])):
-            env.Append(LINKFLAGS=['-Wl,-T"$LDSCRIPT_PATH"'])
-        ###
-
+        __tmp_hook_before_pio_3_2()
         target_firm = env.DataToBin(
             join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
         AlwaysBuild(target_firm)
@@ -344,8 +351,8 @@ else:
         else:
             target_firm = env.ElfToBin(
                 join("$BUILD_DIR", "firmware"), target_elf)
-    target_buildprog = env.Alias("buildprog", target_firm)
 
+target_buildprog = env.Alias("buildprog", target_firm)
 AlwaysBuild(env.Alias("nobuild", target_firm))
 
 #
