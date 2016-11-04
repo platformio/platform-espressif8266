@@ -115,7 +115,8 @@ env.Replace(
     #
 
     UPLOADER="esptool",
-    UPLOADEROTA=join("$FRAMEWORK_ARDUINOESP8266_DIR", "tools", "espota.py"),
+    UPLOADEROTA=join(platform.get_package_dir("tool-espotapy") or "",
+                     "espota.py"),
 
     UPLOADERFLAGS=[
         "-cd", "$UPLOAD_RESETMETHOD",
