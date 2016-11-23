@@ -51,6 +51,7 @@
     },
     "tool-espotapy": {
       "type": "uploader",
+      "optional": true,
       "version": "~1.0.0"
     },
     "tool-mkspiffs": {
