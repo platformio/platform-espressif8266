@@ -227,9 +227,9 @@ if "PIOFRAMEWORK" in env:
             ElfToBin=Builder(
                 action=env.VerboseAction(" ".join([
                     '"$OBJCOPY"',
-                    "-eo", join(
-                        "$FRAMEWORK_ARDUINOESP8266_DIR", "bootloaders",
-                        "eboot", "eboot.elf"),
+                    "-eo",
+                    '"%s"' % join("$FRAMEWORK_ARDUINOESP8266_DIR",
+                                  "bootloaders", "eboot", "eboot.elf"),
                     "-bo", "$TARGET",
                     "-bm", "$BOARD_FLASH_MODE",
                     "-bf", "${__get_board_f_flash(__env__)}",
