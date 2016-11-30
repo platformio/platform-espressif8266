@@ -36,7 +36,7 @@ assert isdir(FRAMEWORK_DIR)
 
 env.Prepend(
     CPPDEFINES=[
-        "ARDUINO=%s" % FRAMEWORK_VERSION.split(".")[1],
+        ("ARDUINO", int(FRAMEWORK_VERSION.split(".")[1])),
         "LWIP_OPEN_SRC"
     ],
     CPPPATH=[
