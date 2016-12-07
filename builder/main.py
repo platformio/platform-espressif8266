@@ -88,7 +88,7 @@ env.Replace(
     ],
 
     CPPDEFINES=[
-        "F_CPU=$BOARD_F_CPU",
+        ("F_CPU", "$BOARD_F_CPU"),
         "__ets__",
         "ICACHE_FLASH"
     ],
