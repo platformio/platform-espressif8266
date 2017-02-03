@@ -60,6 +60,11 @@ env.Prepend(
 env.Append(
     LIBSOURCE_DIRS=[
         join(FRAMEWORK_DIR, "libraries")
+    ],
+    LINKFLAGS=[
+        "-Wl,-wrap,system_restart_local",
+        "-Wl,-wrap,register_chipv6_phy",
+        "-Wl,-wrap,spi_flash_read"
     ]
 )
 

@@ -218,11 +218,6 @@ if "uploadfs" in COMMAND_LINE_TARGETS:
 
 if "PIOFRAMEWORK" in env:
     env.Append(
-        LINKFLAGS=[
-            "-Wl,-wrap,system_restart_local",
-            "-Wl,-wrap,register_chipv6_phy"
-        ],
-
         BUILDERS=dict(
             ElfToBin=Builder(
                 action=env.VerboseAction(" ".join([

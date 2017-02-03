@@ -174,6 +174,9 @@ SECTIONS
     *libgcc.a:_umoddi3.o(.literal .text)
     *libgcc.a:_udivdi3.o(.literal .text)
     *libsmartconfig.a:(.literal .text .literal.* .text.*)
+    *libstdc++.a:(.literal .text .literal.* .text.*)
+    *liblwip_gcc.a:(.literal .text .literal.* .text.*)
+    *liblwip_src.a:(.literal .text .literal.* .text.*)
     *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text .irom.text.*)
     _irom0_text_end = ABSOLUTE(.);
     _flash_code_end = ABSOLUTE(.);
@@ -256,6 +259,7 @@ PROVIDE ( SPI_read_status = 0x400043c8 );
 PROVIDE ( SPI_write_status = 0x40004400 );
 PROVIDE ( SPI_write_enable = 0x4000443c );
 PROVIDE ( Wait_SPI_Idle = 0x4000448c );
+PROVIDE ( Enable_QMode = 0x400044c0 );
 PROVIDE ( SPIEraseArea = 0x40004b44 );
 PROVIDE ( SPIEraseBlock = 0x400049b4 );
 PROVIDE ( SPIEraseChip = 0x40004984 );
