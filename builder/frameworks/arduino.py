@@ -63,7 +63,6 @@ env.Append(
     ],
     LINKFLAGS=[
         "-Wl,-wrap,system_restart_local",
-        "-Wl,-wrap,register_chipv6_phy",
         "-Wl,-wrap,spi_flash_read"
     ]
 )
