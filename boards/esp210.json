@@ -10,7 +10,8 @@
     "variant": "generic"
   }, 
   "frameworks": [
-    "arduino"
+    "arduino",
+    "esp8266-rtos-sdk"
   ], 
   "name": "SweetPea ESP-210", 
   "upload": {

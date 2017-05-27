@@ -10,7 +10,8 @@
     "variant": "ESPDuino"
   }, 
   "frameworks": [
-    "arduino"
+    "arduino",
+    "esp8266-rtos-sdk"
   ], 
   "name": "ESPDuino (ESP-13 Module)", 
   "upload": {

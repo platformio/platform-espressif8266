@@ -10,7 +10,8 @@
     "variant": "espresso_lite_v1"
   }, 
   "frameworks": [
-    "arduino"
+    "arduino",
+    "esp8266-rtos-sdk"
   ], 
   "name": "ESPresso Lite 1.0", 
   "upload": {

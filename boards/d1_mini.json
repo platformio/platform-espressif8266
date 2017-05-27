@@ -10,8 +10,9 @@
     "variant": "d1_mini"
   },
   "frameworks": [
-    "arduino"
-  ],
+    "arduino",
+    "esp8266-rtos-sdk"
+  ], 
   "name": "WEMOS D1 mini",
   "upload": {
     "maximum_ram_size": 81920,
