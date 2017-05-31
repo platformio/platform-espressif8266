@@ -12,21 +12,12 @@
     "type": "git",
     "url": "https://github.com/platformio/platform-espressif8266.git"
   },
-  "version": "1.4.0-alpha.2",
+  "version": "1.4.0-alpha.3",
   "packageRepositories": [
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
     "https://sourceforge.net/projects/platformio-storage/files/packages/manifest.json/download",
     "http://dl.platformio.org/packages/manifest.json",
-    "https://raw.githubusercontent.com/eerimoq/simba/master/make/platformio/manifest.json",
-    {
-      "framework-arduinoespressif8266": [
-        {
-          "url": "https://github.com/platformio/Arduino/archive/master.zip",
-          "version": "1.20400.0-alpha.2",
-          "system": "*"
-        }
-      ]
-    }
+    "https://raw.githubusercontent.com/eerimoq/simba/master/make/platformio/manifest.json"
   ],
   "frameworks": {
     "arduino": {
@@ -46,7 +37,7 @@
     "framework-arduinoespressif8266": {
       "type": "framework",
       "optional": true,
-      "version": "1.20400.0-alpha.2"
+      "version": "https://github.com/platformio/platformio-pkg-framework-arduinoespressif8266.git"
     },
     "framework-simba": {
       "type": "framework",
