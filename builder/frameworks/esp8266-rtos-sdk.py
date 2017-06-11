@@ -46,3 +46,18 @@ env.Prepend(
 env.Replace(
     LDSCRIPT_PATH=[join(FRAMEWORK_DIR, "ld", "eagle.app.v6.ld")],
 )
+
+#
+# Target: Build Driver Library
+#
+
+libs = []
+
+envsafe = env.Clone()
+
+libs.append(envsafe.BuildLibrary(
+    join(FRAMEWORK_DIR, "lib", "driver"),
+    join(FRAMEWORK_DIR, "driver_lib")
+))
+
+env.Prepend(LIBS=libs)
