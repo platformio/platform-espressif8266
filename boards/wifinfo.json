@@ -10,7 +10,8 @@
     "variant": "wifinfo"
   }, 
   "frameworks": [
-    "arduino"
+    "arduino",
+    "esp8266-rtos-sdk"
   ], 
   "name": "WifInfo", 
   "upload": {

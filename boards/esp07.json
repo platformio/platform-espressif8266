@@ -10,7 +10,8 @@
     "variant": "nodemcu"
   }, 
   "frameworks": [
-    "arduino"
+    "arduino",
+    "esp8266-rtos-sdk"
   ], 
   "name": "Espressif Generic ESP8266 ESP-07", 
   "upload": {

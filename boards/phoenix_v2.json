@@ -10,7 +10,8 @@
     "variant": "phoenix_v2"
   }, 
   "frameworks": [
-    "arduino"
+    "arduino",
+    "esp8266-rtos-sdk"
   ], 
   "name": "Phoenix 2.0", 
   "upload": {

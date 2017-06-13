@@ -10,7 +10,9 @@
     "variant": "nodemcu"
   }, 
   "frameworks": [
-    "arduino"
+    "arduino",
+    "simba",
+    "esp8266-rtos-sdk"
   ], 
   "name": "ESP-WROOM-02", 
   "upload": {
