@@ -153,10 +153,18 @@ env.Append(
 if int(ARGUMENTS.get("PIOVERBOSE", 0)):
     env.Prepend(UPLOADERFLAGS=["-vv"])
 
+#
+# Keep support for old LD Scripts
+#
+
+if "esp8266.flash" in env.get("BUILD_FLAGS", ""):
+    env['BUILD_FLAGS'] = env['BUILD_FLAGS'].replace("esp8266.flash",
+                                                    "eagle.flash")
 
 #
 # SPIFFS
 #
+
 
 def fetch_spiffs_size(env):
     spiffs_re = re.compile(
@@ -259,7 +267,7 @@ else:
         env.Replace(
             UPLOAD_ADDRESS="0x20000",
         )
-    else: # Configure Native SDK
+    else:  # Configure Native SDK
         env.Append(
             CPPPATH=[
                 join("$SDK_ESP8266_DIR", "include"), "$PROJECTSRC_DIR"
@@ -276,7 +284,7 @@ else:
                 "main", "wps", "crypto", "json", "ssl", "pwm", "upgrade",
                 "smartconfig", "airkiss", "at"
             ],
-            UPLOAD_ADDRESS = "0X40000"
+            UPLOAD_ADDRESS="0X40000"
         )
 
     # ESP8266 RTOS SDK and Native SDK common configuration
@@ -321,19 +329,9 @@ else:
 # Target: Build executable and linkable firmware or SPIFFS image
 #
 
-
-def __tmp_hook_before_pio_3_2():
-    env.ProcessFlags(env.get("BUILD_FLAGS"))
-    # append specified LD_SCRIPT
-    if ("LDSCRIPT_PATH" in env and
-            not any(["-Wl,-T" in f for f in env['LINKFLAGS']])):
-        env.Append(LINKFLAGS=['-Wl,-T"$LDSCRIPT_PATH"'])
-
-
 target_elf = None
 if "nobuild" in COMMAND_LINE_TARGETS:
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
-        __tmp_hook_before_pio_3_2()
         fetch_spiffs_size(env)
         target_firm = join("$BUILD_DIR", "spiffs.bin")
     elif env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
@@ -345,7 +343,6 @@ if "nobuild" in COMMAND_LINE_TARGETS:
         ]
 else:
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
-        __tmp_hook_before_pio_3_2()
         target_firm = env.DataToBin(
             join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
         AlwaysBuild(target_firm)
@@ -356,9 +353,10 @@ else:
             target_firm = env.ElfToBin(
                 join("$BUILD_DIR", "firmware"), target_elf)
         else:
-            target_firm = env.ElfToBin([join("$BUILD_DIR", "eagle.flash.bin"),
-                                        join("$BUILD_DIR", "eagle.irom0text.bin")],
-                                       target_elf)
+            target_firm = env.ElfToBin([
+                join("$BUILD_DIR", "eagle.flash.bin"),
+                join("$BUILD_DIR", "eagle.irom0text.bin")
+            ], target_elf)
 
 AlwaysBuild(env.Alias("nobuild", target_firm))
 target_buildprog = env.Alias("buildprog", target_firm, target_firm)
