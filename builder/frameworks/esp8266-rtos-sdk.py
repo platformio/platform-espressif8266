@@ -1,9 +1,24 @@
+# Copyright 2014-present PlatformIO <contact@platformio.org>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 ESP8266 RTOS SDK
 
-Latest ESP8266 SDK based on FreeRTOS http://bbs.espressif.com
+ESP8266 SDK based on FreeRTOS, a truly free professional grade RTOS for
+microcontrollers
 
-http://github.com/espressif/ESP_8266_SDK
+https://github.com/espressif/ESP8266_RTOS_SDK
 """
 
 from os.path import isdir, join
