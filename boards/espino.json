@@ -10,7 +10,8 @@
     "variant": "espino"
   }, 
   "frameworks": [
-    "arduino"
+    "arduino",
+    "esp8266-rtos-sdk"
   ], 
   "name": "ESPino", 
   "upload": {

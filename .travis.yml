@@ -6,6 +6,7 @@ env:
   - PLATFORMIO_PROJECT_DIR=examples/arduino-blink
   - PLATFORMIO_PROJECT_DIR=examples/arduino-webserver
   - PLATFORMIO_PROJECT_DIR=examples/arduino-wifiscan
+  - PLATFORMIO_PROJECT_DIR=examples/esp8266-rtos-sdk-blink
   - PLATFORMIO_PROJECT_DIR=examples/native-sdk
   - PLATFORMIO_PROJECT_DIR=examples/simba-blink
 
