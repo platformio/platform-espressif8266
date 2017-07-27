@@ -9,6 +9,9 @@
     "mcu": "esp8266",
     "variant": "d1_mini"
   },
+  "connectivity": [
+    "wifi"
+  ],
   "frameworks": [
     "arduino"
   ],
