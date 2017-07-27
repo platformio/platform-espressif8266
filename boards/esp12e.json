@@ -5,7 +5,7 @@
     "f_cpu": "80000000L",
     "f_flash": "40000000L",
     "flash_mode": "dio",
-    "ldscript": "esp8266.flash.4m1m.ld",
+    "ldscript": "eagle.flash.4m1m.ld",
     "mcu": "esp8266",
     "variant": "nodemcu"
   },
