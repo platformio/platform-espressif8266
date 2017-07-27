@@ -1,26 +1,29 @@
 {
   "build": {
-    "core": "esp8266", 
-    "extra_flags": "-DESP8266 -DARDUINO_ARCH_ESP8266 -DARDUINO_ESP8266_ESP13", 
-    "f_cpu": "80000000L", 
-    "f_flash": "40000000L", 
-    "flash_mode": "qio", 
-    "ldscript": "esp8266.flash.4m1m.ld", 
-    "mcu": "esp8266", 
+    "core": "esp8266",
+    "extra_flags": "-DESP8266 -DARDUINO_ARCH_ESP8266 -DARDUINO_ESP8266_ESP13",
+    "f_cpu": "80000000L",
+    "f_flash": "40000000L",
+    "flash_mode": "qio",
+    "ldscript": "esp8266.flash.4m1m.ld",
+    "mcu": "esp8266",
     "variant": "espinotee"
-  }, 
+  },
+  "connectivity": [
+    "wifi"
+  ],
   "frameworks": [
     "arduino",
     "esp8266-rtos-sdk"
-  ], 
-  "name": "ThaiEasyElec ESPino", 
+  ],
+  "name": "ThaiEasyElec ESPino",
   "upload": {
-    "maximum_ram_size": 81920, 
-    "maximum_size": 4194304, 
-    "require_upload_port": true, 
-    "resetmethod": "nodemcu", 
+    "maximum_ram_size": 81920,
+    "maximum_size": 4194304,
+    "require_upload_port": true,
+    "resetmethod": "nodemcu",
     "speed": 115200
-  }, 
-  "url": "http://www.thaieasyelec.com/products/wireless-modules/wifi-modules/espino-wifi-development-board-detail.html", 
+  },
+  "url": "http://www.thaieasyelec.com/products/wireless-modules/wifi-modules/espino-wifi-development-board-detail.html",
   "vendor": "ThaiEasyElec"
 }

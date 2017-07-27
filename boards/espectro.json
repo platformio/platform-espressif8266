@@ -9,6 +9,9 @@
     "mcu": "esp8266",
     "variant": "espectro"
   },
+  "connectivity": [
+    "wifi"
+  ],
   "frameworks": [
     "arduino",
     "esp8266-rtos-sdk"
