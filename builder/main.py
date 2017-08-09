@@ -157,9 +157,10 @@ if int(ARGUMENTS.get("PIOVERBOSE", 0)):
 # Keep support for old LD Scripts
 #
 
-if "esp8266.flash" in env.get("BUILD_FLAGS", ""):
-    env['BUILD_FLAGS'] = env['BUILD_FLAGS'].replace("esp8266.flash",
-                                                    "eagle.flash")
+env.Replace(BUILD_FLAGS=[
+    f.replace("esp8266.flash", "eagle.flash") if "esp8266.flash" in f else f
+    for f in env.get("BUILD_FLAGS", [])
+])
 
 #
 # SPIFFS
