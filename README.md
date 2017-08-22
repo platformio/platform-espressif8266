@@ -19,6 +19,6 @@ Espressif Systems is a privately held fabless semiconductor company. They provid
 > platformio platform install https://github.com/platformio/platform-espressif8266.git
 ```
 
-# Staging version of Arduino Framework
+# Using "Staging" Arduino Core
 
-Please read documentation for [Using Arduino Framework with Staging version](http://docs.platformio.org/page/platforms/espressif8266.html#using-arduino-framework-with-staging-version)
+http://docs.platformio.org/page/platforms/espressif8266.html#using-arduino-framework-with-staging-version
