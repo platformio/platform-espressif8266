@@ -334,6 +334,8 @@ else:
 target_elf = None
 if "nobuild" in COMMAND_LINE_TARGETS:
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        # build/load frameworks before, they set LDPATH
+        env.BuildFrameworks(env.get("PIOFRAMEWORK"))
         fetch_spiffs_size(env)
         target_firm = join("$BUILD_DIR", "spiffs.bin")
     elif env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
@@ -345,6 +347,8 @@ if "nobuild" in COMMAND_LINE_TARGETS:
         ]
 else:
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        # build/load frameworks before, they set LDPATH
+        env.BuildFrameworks(env.get("PIOFRAMEWORK"))
         target_firm = env.DataToBin(
             join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
         AlwaysBuild(target_firm)
