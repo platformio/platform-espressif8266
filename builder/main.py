@@ -331,9 +331,18 @@ else:
 # Target: Build executable and linkable firmware or SPIFFS image
 #
 
+
+def __tmp_hook_before_pio_3_2():
+    env.ProcessFlags(env.get("BUILD_FLAGS"))
+    # append specified LD_SCRIPT
+    if ("LDSCRIPT_PATH" in env and
+            not any(["-Wl,-T" in f for f in env['LINKFLAGS']])):
+        env.Append(LINKFLAGS=['-Wl,-T"$LDSCRIPT_PATH"'])
+
 target_elf = None
 if "nobuild" in COMMAND_LINE_TARGETS:
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        __tmp_hook_before_pio_3_2()
         # build/load frameworks before, they set LDPATH
         env.BuildFrameworks(env.get("PIOFRAMEWORK"))
         fetch_spiffs_size(env)
@@ -347,6 +356,7 @@ if "nobuild" in COMMAND_LINE_TARGETS:
         ]
 else:
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        __tmp_hook_before_pio_3_2()
         # build/load frameworks before, they set LDPATH
         env.BuildFrameworks(env.get("PIOFRAMEWORK"))
         target_firm = env.DataToBin(
