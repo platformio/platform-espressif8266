@@ -24,8 +24,10 @@ http://arduino.cc/en/Reference/HomePage
 
 from os.path import join
 
-from SCons.Script import DefaultEnvironment, SConscript
+from SCons.Script import COMMAND_LINE_TARGETS, DefaultEnvironment, SConscript
 
-SConscript(
-    join(DefaultEnvironment().PioPlatform().get_package_dir(
-        "framework-arduinoespressif8266"), "tools", "platformio-build.py"))
+
+if "nobuild" not in COMMAND_LINE_TARGETS:
+    SConscript(
+        join(DefaultEnvironment().PioPlatform().get_package_dir(
+            "framework-arduinoespressif8266"), "tools", "platformio-build.py"))
