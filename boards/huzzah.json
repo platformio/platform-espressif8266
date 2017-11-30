@@ -15,7 +15,8 @@
   "frameworks": [
     "arduino",
     "simba",
-    "esp8266-rtos-sdk"
+    "esp8266-rtos-sdk",
+    "esp8266-nonos-sdk"
   ],
   "name": "Adafruit HUZZAH ESP8266",
   "upload": {

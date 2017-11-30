@@ -14,7 +14,8 @@
   ],
   "frameworks": [
     "arduino",
-    "esp8266-rtos-sdk"
+    "esp8266-rtos-sdk",
+    "esp8266-nonos-sdk"
   ],
   "name": "Espressif Generic ESP8266 ESP-07",
   "upload": {

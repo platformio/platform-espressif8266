@@ -14,7 +14,8 @@
   ],
   "frameworks": [
     "arduino",
-    "esp8266-rtos-sdk"
+    "esp8266-rtos-sdk",
+    "esp8266-nonos-sdk"
   ],
   "name": "ESPresso Lite 1.0",
   "upload": {

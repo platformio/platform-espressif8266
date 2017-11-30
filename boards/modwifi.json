@@ -14,7 +14,8 @@
   ],
   "frameworks": [
     "arduino",
-    "esp8266-rtos-sdk"
+    "esp8266-rtos-sdk",
+    "esp8266-nonos-sdk"
   ],
   "name": "Olimex MOD-WIFI-ESP8266(-DEV)",
   "upload": {
