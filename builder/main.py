@@ -91,7 +91,9 @@ env.Replace(
     CPPDEFINES=[
         ("F_CPU", "$BOARD_F_CPU"),
         "__ets__",
-        "ICACHE_FLASH"
+        "ICACHE_FLASH",
+        "__SCHAR_MAX__=0x7f",
+        "__SHRT_MAX__=0x7fff"
     ],
 
     LINKFLAGS=[
