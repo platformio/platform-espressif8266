@@ -54,11 +54,12 @@ env.Replace(
     AS="xtensa-lx106-elf-as",
     CC="xtensa-lx106-elf-gcc",
     CXX="xtensa-lx106-elf-g++",
+    GDB="xtensa-lx106-elf-gdb",
     OBJCOPY="esptool",
     RANLIB="xtensa-lx106-elf-ranlib",
     SIZETOOL="xtensa-lx106-elf-size",
 
-    ARFLAGS=["rcs"],
+    ARFLAGS=["rc"],
 
     ASFLAGS=["-x", "assembler-with-cpp"],
 
@@ -155,6 +156,7 @@ if int(ARGUMENTS.get("PIOVERBOSE", 0)):
 #
 # SPIFFS
 #
+
 
 def fetch_spiffs_size(env):
     spiffs_re = re.compile(
@@ -262,7 +264,23 @@ else:
         env.Replace(
             UPLOAD_ADDRESS="0x20000",
         )
-    else: # Configure Native SDK
+
+    # Configure NONOS SDK
+    elif env.subst("$PIOFRAMEWORK") == "esp8266-nonos-sdk":
+        env.Append(
+            CPPPATH=[
+                join("$SDK_ESP8266_DIR", "include"), "$PROJECTSRC_DIR"
+            ],
+            CCFLAGS=[
+                "-fno-builtin-printf",
+            ]
+        )
+        env.Replace(
+            UPLOAD_ADDRESS="0x10000",
+        )
+
+    # Configure Native SDK
+    else:
         env.Append(
             CPPPATH=[
                 join("$SDK_ESP8266_DIR", "include"), "$PROJECTSRC_DIR"
@@ -279,7 +297,7 @@ else:
                 "main", "wps", "crypto", "json", "ssl", "pwm", "upgrade",
                 "smartconfig", "airkiss", "at"
             ],
-            UPLOAD_ADDRESS = "0X40000"
+            UPLOAD_ADDRESS="0X40000"
         )
 
     # ESP8266 RTOS SDK and Native SDK common configuration

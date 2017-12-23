@@ -12,12 +12,13 @@
     "type": "git",
     "url": "https://github.com/platformio/platform-espressif8266.git"
   },
-  "version": "1.4.0",
+  "version": "1.5.0",
   "packageRepositories": [
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
     "http://dl.platformio.org/packages/manifest.json",
     "https://raw.githubusercontent.com/eerimoq/simba/master/make/platformio/manifest.json",
-    "https://raw.githubusercontent.com/yanbe/framework-esp8266-rtos-sdk/master/manifest.json"
+    "https://raw.githubusercontent.com/yanbe/framework-esp8266-rtos-sdk/master/manifest.json",
+    "https://raw.githubusercontent.com/sanderv32/framework-esp8266-nonos-sdk/master/manifest.json"
   ],
   "frameworks": {
     "arduino": {
@@ -31,6 +32,10 @@
     "esp8266-rtos-sdk": {
       "package": "framework-esp8266-rtos-sdk",
       "script": "builder/frameworks/esp8266-rtos-sdk.py"
+    },
+    "esp8266-nonos-sdk": {
+      "package": "framework-esp8266-nonos-sdk",
+      "script": "builder/frameworks/esp8266-nonos-sdk.py"
     }
   },
   "packages": {
@@ -47,6 +52,11 @@
       "type": "framework",
       "optional": true,
       "version": ">=1.5.0-beta"
+    },
+    "framework-esp8266-nonos-sdk": {
+      "type": "framework",
+      "optional": true,
+      "version": ">=2.1.0"
     },
     "framework-simba": {
       "type": "framework",
