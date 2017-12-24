@@ -264,9 +264,8 @@ else:
         env.Replace(
             UPLOAD_ADDRESS="0x20000",
         )
-
-    # Configure NONOS SDK
     elif env.subst("$PIOFRAMEWORK") == "esp8266-nonos-sdk":
+        # Configure NONOS SDK
         env.Append(
             CPPPATH=[
                 join("$SDK_ESP8266_DIR", "include"), "$PROJECTSRC_DIR"
@@ -279,8 +278,7 @@ else:
             UPLOAD_ADDRESS="0x10000",
         )
 
-    # Configure Native SDK
-    else:
+    else: # Configure Native SDK
         env.Append(
             CPPPATH=[
                 join("$SDK_ESP8266_DIR", "include"), "$PROJECTSRC_DIR"
