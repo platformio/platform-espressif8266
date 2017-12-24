@@ -7,7 +7,7 @@
     "flash_mode": "dio",
     "ldscript": "esp8266.flash.4m1m.ld",
     "mcu": "esp8266",
-    "variant": "d1_mini"
+    "variant": "heltec_wifi_kit_8"
   },
   "connectivity": [
     "wifi"
