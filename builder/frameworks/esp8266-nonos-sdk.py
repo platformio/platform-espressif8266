@@ -51,8 +51,8 @@ env.Prepend(
 
     LIBS=[
         "airkiss", "at", "c", "crypto", "driver", "espnow", "gcc", "json", "lwip",
-        "main", "mbedtls", "mesh", "net80211", "phy", "pp", "pwm", "smartconfig",
-        "ssl", "upgrade", "wpa", "wpa2", "wps"
+        "lwip2", "main", "mbedtls", "mesh", "net80211", "phy", "pp", "pwm",
+        "smartconfig", "ssl", "upgrade", "wpa", "wpa2", "wps"
     ]
 )
 
