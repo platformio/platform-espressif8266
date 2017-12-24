@@ -59,7 +59,7 @@ env.Replace(
     RANLIB="xtensa-lx106-elf-ranlib",
     SIZETOOL="xtensa-lx106-elf-size",
 
-    ARFLAGS=["rcs"],
+    ARFLAGS=["rc"],
 
     ASFLAGS=["-x", "assembler-with-cpp"],
 
@@ -156,6 +156,7 @@ if int(ARGUMENTS.get("PIOVERBOSE", 0)):
 #
 # SPIFFS
 #
+
 
 def fetch_spiffs_size(env):
     spiffs_re = re.compile(
@@ -294,7 +295,7 @@ else:
                 "main", "wps", "crypto", "json", "ssl", "pwm", "upgrade",
                 "smartconfig", "airkiss", "at"
             ],
-            UPLOAD_ADDRESS = "0X40000"
+            UPLOAD_ADDRESS="0X40000"
         )
 
     # ESP8266 RTOS SDK and Native SDK common configuration
