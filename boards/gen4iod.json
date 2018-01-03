@@ -1,13 +1,13 @@
 {
   "build": {
     "core": "esp8266",
-    "extra_flags": "-DESP8266 -DARDUINO_ARCH_ESP8266 -DARDUINO_ESP8266_THING_DEV",
+    "extra_flags": "-DESP8266 -DARDUINO_ARCH_ESP8266 -DARDUINO_ESP8266_GEN4_IOD",
     "f_cpu": "80000000L",
     "f_flash": "40000000L",
-    "flash_mode": "dio",
+    "flash_mode": "qio",
     "ldscript": "eagle.flash.512k64.ld",
     "mcu": "esp8266",
-    "variant": "thing"
+    "variant": "generic"
   },
   "connectivity": [
     "wifi"
@@ -17,14 +17,14 @@
     "esp8266-rtos-sdk",
     "esp8266-nonos-sdk"
   ],
-  "name": "SparkFun ESP8266 Thing Dev",
+  "name": "4D Systems gen4 IoD Range",
   "upload": {
     "maximum_ram_size": 81920,
     "maximum_size": 524288,
     "require_upload_port": true,
-    "resetmethod": "nodemcu",
+    "resetmethod": "ck",
     "speed": 115200
   },
-  "url": "https://www.sparkfun.com/products/13231",
-  "vendor": "SparkFun"
+  "url": "http://www.4dsystems.com.au/product/gen4_IoD/",
+  "vendor": "4D Systems"
 }

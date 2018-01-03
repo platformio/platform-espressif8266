@@ -99,6 +99,8 @@ env.Replace(
         "-nostdlib",
         "-Wl,--no-check-sections",
         "-u", "call_user_start",
+        "-u", "_printf_float",
+        "-u", "_scanf_float",
         "-Wl,-static",
         "-Wl,--gc-sections"
     ],
@@ -141,7 +143,6 @@ env.Replace(
     MKSPIFFSTOOL="mkspiffs",
     SIZEPRINTCMD='$SIZETOOL -B -d $SOURCES',
 
-    PROGNAME="firmware",
     PROGSUFFIX=".elf"
 )
 
@@ -152,6 +153,18 @@ env.Append(
 if int(ARGUMENTS.get("PIOVERBOSE", 0)):
     env.Prepend(UPLOADERFLAGS=["-vv"])
 
+# Allow user to override via pre:script
+if env.get("PROGNAME", "program") == "program":
+    env.Replace(PROGNAME="firmware")
+
+#
+# Keep support for old LD Scripts
+#
+
+env.Replace(BUILD_FLAGS=[
+    f.replace("esp8266.flash", "eagle.flash") if "esp8266.flash" in f else f
+    for f in env.get("BUILD_FLAGS", [])
+])
 
 #
 # SPIFFS
@@ -218,11 +231,6 @@ if "uploadfs" in COMMAND_LINE_TARGETS:
 
 if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
     env.Append(
-        LINKFLAGS=[
-            "-Wl,-wrap,system_restart_local",
-            "-Wl,-wrap,register_chipv6_phy"
-        ],
-
         BUILDERS=dict(
             ElfToBin=Builder(
                 action=env.VerboseAction(" ".join([
@@ -253,7 +261,7 @@ if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
     ota_port = None
     if env.get("UPLOAD_PORT"):
         ota_port = re.match(
-            r"\"?((([0-9]{1,3}\.){3}[0-9]{1,3})|.+\.local)\"?$",
+            r"\"?((([0-9]{1,3}\.){3}[0-9]{1,3})|[^\\/]+\.[^\\/]+)\"?$",
             env.get("UPLOAD_PORT"))
     if ota_port:
         env.Replace(UPLOADCMD="$UPLOADOTACMD")
@@ -342,23 +350,13 @@ else:
 # Target: Build executable and linkable firmware or SPIFFS image
 #
 
-
-def __tmp_hook_before_pio_3_2():
-    env.ProcessFlags(env.get("BUILD_FLAGS"))
-    # append specified LD_SCRIPT
-    if ("LDSCRIPT_PATH" in env and
-            not any(["-Wl,-T" in f for f in env['LINKFLAGS']])):
-        env.Append(LINKFLAGS=['-Wl,-T"$LDSCRIPT_PATH"'])
-
-
-target_elf = None
+target_elf = env.BuildProgram()
 if "nobuild" in COMMAND_LINE_TARGETS:
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
-        __tmp_hook_before_pio_3_2()
         fetch_spiffs_size(env)
         target_firm = join("$BUILD_DIR", "spiffs.bin")
     elif env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
-        target_firm = join("$BUILD_DIR", "firmware.bin")
+        target_firm = join("$BUILD_DIR", "${PROGNAME}.bin")
     else:
         target_firm = [
             join("$BUILD_DIR", "eagle.flash.bin"),
@@ -366,20 +364,18 @@ if "nobuild" in COMMAND_LINE_TARGETS:
         ]
 else:
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
-        __tmp_hook_before_pio_3_2()
         target_firm = env.DataToBin(
             join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
         AlwaysBuild(target_firm)
         AlwaysBuild(env.Alias("buildfs", target_firm))
     else:
-        target_elf = env.BuildProgram()
         if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
-            target_firm = env.ElfToBin(
-                join("$BUILD_DIR", "firmware"), target_elf)
+            target_firm = env.ElfToBin(target_elf)
         else:
-            target_firm = env.ElfToBin([join("$BUILD_DIR", "eagle.flash.bin"),
-                                        join("$BUILD_DIR", "eagle.irom0text.bin")],
-                                       target_elf)
+            target_firm = env.ElfToBin([
+                join("$BUILD_DIR", "eagle.flash.bin"),
+                join("$BUILD_DIR", "eagle.irom0text.bin")
+            ], target_elf)
 
 AlwaysBuild(env.Alias("nobuild", target_firm))
 target_buildprog = env.Alias("buildprog", target_firm, target_firm)

@@ -22,65 +22,12 @@ kinds of creative coding, interactive objects, spaces or physical experiences.
 http://arduino.cc/en/Reference/HomePage
 """
 
-from os.path import isdir, join
+from os.path import join
 
-from SCons.Script import DefaultEnvironment
+from SCons.Script import COMMAND_LINE_TARGETS, DefaultEnvironment, SConscript
 
-env = DefaultEnvironment()
-platform = env.PioPlatform()
 
-FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoespressif8266")
-FRAMEWORK_VERSION = platform.get_package_version(
-    "framework-arduinoespressif8266")
-assert isdir(FRAMEWORK_DIR)
-
-env.Prepend(
-    CPPDEFINES=[
-        ("ARDUINO", int(FRAMEWORK_VERSION.split(".")[1])),
-        "LWIP_OPEN_SRC"
-    ],
-    CPPPATH=[
-        join(FRAMEWORK_DIR, "tools", "sdk", "include"),
-        join(FRAMEWORK_DIR, "tools", "sdk", "lwip", "include"),
-        join(FRAMEWORK_DIR, "cores", env.BoardConfig().get("build.core"))
-    ],
-    LIBPATH=[join(FRAMEWORK_DIR, "tools", "sdk", "lib")],
-    LIBS=[
-        "mesh", "wpa2", "smartconfig", "pp", "main", "wpa", "lwip_gcc",
-        "net80211", "wps", "crypto", "phy", "hal", "axtls", "gcc",
-        "m", "stdc++"
-    ]
-)
-
-env.Append(
-    LIBSOURCE_DIRS=[
-        join(FRAMEWORK_DIR, "libraries")
-    ]
-)
-
-#
-# Target: Build Core Library
-#
-
-libs = []
-
-if "build.variant" in env.BoardConfig():
-    env.Append(
-        CPPPATH=[
-            join(FRAMEWORK_DIR, "variants",
-                 env.BoardConfig().get("build.variant"))
-        ]
-    )
-    libs.append(env.BuildLibrary(
-        join("$BUILD_DIR", "FrameworkArduinoVariant"),
-        join(FRAMEWORK_DIR, "variants", env.BoardConfig().get("build.variant"))
-    ))
-
-envsafe = env.Clone()
-
-libs.append(envsafe.BuildLibrary(
-    join("$BUILD_DIR", "FrameworkArduino"),
-    join(FRAMEWORK_DIR, "cores", env.BoardConfig().get("build.core"))
-))
-
-env.Prepend(LIBS=libs)
+if "nobuild" not in COMMAND_LINE_TARGETS:
+    SConscript(
+        join(DefaultEnvironment().PioPlatform().get_package_dir(
+            "framework-arduinoespressif8266"), "tools", "platformio-build.py"))
