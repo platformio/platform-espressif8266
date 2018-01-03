@@ -143,7 +143,6 @@ env.Replace(
     MKSPIFFSTOOL="mkspiffs",
     SIZEPRINTCMD='$SIZETOOL -B -d $SOURCES',
 
-    PROGNAME="firmware",
     PROGSUFFIX=".elf"
 )
 
@@ -153,6 +152,8 @@ env.Append(
 
 if int(ARGUMENTS.get("PIOVERBOSE", 0)):
     env.Prepend(UPLOADERFLAGS=["-vv"])
+if env.get("PROGNAME", "program") == "program":
+    env.Replace(PROGNAME="firmware")
 
 #
 # Keep support for old LD Scripts
@@ -353,7 +354,7 @@ if "nobuild" in COMMAND_LINE_TARGETS:
         fetch_spiffs_size(env)
         target_firm = join("$BUILD_DIR", "spiffs.bin")
     elif env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
-        target_firm = join("$BUILD_DIR", "firmware.bin")
+        target_firm = join("$BUILD_DIR", "${PROGNAME}.bin")
     else:
         target_firm = [
             join("$BUILD_DIR", "eagle.flash.bin"),
@@ -368,7 +369,7 @@ else:
     else:
         if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
             target_firm = env.ElfToBin(
-                join("$BUILD_DIR", "firmware"), target_elf)
+                join("$BUILD_DIR", "${PROGNAME}"), target_elf)
         else:
             target_firm = env.ElfToBin([
                 join("$BUILD_DIR", "eagle.flash.bin"),
