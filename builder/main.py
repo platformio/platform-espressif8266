@@ -152,6 +152,8 @@ env.Append(
 
 if int(ARGUMENTS.get("PIOVERBOSE", 0)):
     env.Prepend(UPLOADERFLAGS=["-vv"])
+
+# Allow user to override via pre:script
 if env.get("PROGNAME", "program") == "program":
     env.Replace(PROGNAME="firmware")
 
@@ -368,8 +370,7 @@ else:
         AlwaysBuild(env.Alias("buildfs", target_firm))
     else:
         if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
-            target_firm = env.ElfToBin(
-                join("$BUILD_DIR", "${PROGNAME}"), target_elf)
+            target_firm = env.ElfToBin(target_elf)
         else:
             target_firm = env.ElfToBin([
                 join("$BUILD_DIR", "eagle.flash.bin"),
