@@ -261,7 +261,7 @@ if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
     ota_port = None
     if env.get("UPLOAD_PORT"):
         ota_port = re.match(
-            r"\"?((([0-9]{1,3}\.){3}[0-9]{1,3})|.+\.local)\"?$",
+            r"\"?((([0-9]{1,3}\.){3}[0-9]{1,3})|[^\\/]+\.[^\\/]+)\"?$",
             env.get("UPLOAD_PORT"))
     if ota_port:
         env.Replace(UPLOADCMD="$UPLOADOTACMD")
