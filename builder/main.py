@@ -189,9 +189,12 @@ def fetch_spiffs_size(env):
         _value = 0
         if int(env[k], 16) < 0x40300000:
             _value = int(env[k], 16) & 0xFFFFF
+        elif int(env[k], 16) < 0x411FB000:
+            _value = int(env[k], 16) & 0xFFFFFF
+            _value -= 0x200000  # correction
         else:
             _value = int(env[k], 16) & 0xFFFFFF
-            _value -= 0x200000  # esptool offset
+            _value += 0xE00000  # correction
 
         env[k] = hex(_value)
 
