@@ -373,7 +373,8 @@ else:
         AlwaysBuild(env.Alias("buildfs", target_firm))
     else:
         if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
-            target_firm = env.ElfToBin(target_elf)
+            target_firm = env.ElfToBin(
+                join("$BUILD_DIR", "${PROGNAME}"), target_elf)
         else:
             target_firm = env.ElfToBin([
                 join("$BUILD_DIR", "eagle.flash.bin"),
