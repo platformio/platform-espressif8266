@@ -65,7 +65,7 @@
     },
     "tool-esptool": {
       "type": "uploader",
-      "version": "~1.409.0"
+      "version": "<2"
     },
     "tool-espotapy": {
       "type": "uploader",
