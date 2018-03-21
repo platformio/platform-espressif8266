@@ -68,9 +68,7 @@ env.Replace(
 
 libs = []
 
-envsafe = env.Clone()
-
-libs.append(envsafe.BuildLibrary(
+libs.append(env.BuildLibrary(
     join(FRAMEWORK_DIR, "lib", "driver"),
     join(FRAMEWORK_DIR, "driver_lib")
 ))
