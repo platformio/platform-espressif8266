@@ -7,7 +7,7 @@
     "flash_mode": "qio",
     "ldscript": "eagle.flash.2m.ld",
     "mcu": "esp8266",
-    "variant": "generic"
+    "variant": "modwifi"
   },
   "connectivity": [
     "wifi"
