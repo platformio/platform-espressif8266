@@ -23,7 +23,7 @@
     "maximum_size": 4194304,
     "require_upload_port": true,
     "resetmethod": "ck",
-    "speed": 115200
+    "speed": 57600
   },
   "url": "http://wiki.sweetpeas.se/index.php?title=ESP-210",
   "vendor": "SweetPea"
