@@ -9,16 +9,27 @@ Espressif Systems is a privately held fabless semiconductor company. They provid
 
 # Usage
 
-1. [Install PlatformIO Core](http://docs.platformio.org/page/core.html)
-2. Install Espressif 8266 development platform:
-```bash
-# install the latest stable version
-> platformio platform install espressif8266
+1. [Install PlatformIO](http://platformio.org)
+2. Create PlatformIO project and configure a platform option in [platformio.ini](http://docs.platformio.org/page/projectconf.html) file:
 
-# install development version
-> platformio platform install https://github.com/platformio/platform-espressif8266.git
+## Stable version
+
+```ini
+[env:stable]
+platform = espressif8266
+board = ...
+...
 ```
 
-# Using "Staging" Arduino Core
+## Development version
 
-http://docs.platformio.org/page/platforms/espressif8266.html#using-arduino-framework-with-staging-version
+```ini
+[env:development]
+platform = https://github.com/platformio/platform-espressif8266.git
+board = ...
+...
+```
+
+# Configuration
+
+Please navigate to [documentation](http://docs.platformio.org/page/platforms/espressif8266.html).
