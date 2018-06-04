@@ -5,7 +5,7 @@
     "f_cpu": "80000000L",
     "f_flash": "40000000L",
     "flash_mode": "qio",
-    "ldscript": "eagle.flash.4m1m.ld",
+    "ldscript": "eagle.flash.2m.ld",
     "mcu": "esp8266",
     "variant": "nodemcu"
   },
@@ -21,7 +21,7 @@
   "name": "ESP-WROOM-02",
   "upload": {
     "maximum_ram_size": 81920,
-    "maximum_size": 4194304,
+    "maximum_size": 2097152,
     "require_upload_port": true,
     "resetmethod": "nodemcu",
     "speed": 115200

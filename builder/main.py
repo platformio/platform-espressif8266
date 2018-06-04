@@ -141,6 +141,10 @@ env.Replace(
     #
 
     MKSPIFFSTOOL="mkspiffs",
+
+    SIZEPROGREGEXP=r"^(?:\.irom0\.text|\.text|\.data|\.rodata|)\s+([0-9]+).*",
+    SIZEDATAREGEXP=r"^(?:\.data|\.rodata|\.bss)\s+([0-9]+).*",
+    SIZECHECKCMD="$SIZETOOL -A -d $SOURCES",
     SIZEPRINTCMD='$SIZETOOL -B -d $SOURCES',
 
     PROGSUFFIX=".elf"
