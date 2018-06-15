@@ -17,24 +17,14 @@
 import re
 from os.path import join
 
+
 from SCons.Script import (ARGUMENTS, COMMAND_LINE_TARGETS, AlwaysBuild,
                           Builder, Default, DefaultEnvironment)
+from platformio import util
 
-
-def _get_flash_size(env):
-    # use board's flash size by default
-    board_max_size = int(env.BoardConfig().get("upload.maximum_size", 0))
-
-    # check if user overrides LD Script
-    match = re.search(r"\.flash\.(\d+)(m|k).*\.ld", env.GetActualLDScript())
-    if match:
-        if match.group(2) == "k":
-            board_max_size = int(match.group(1)) * 1024
-        elif match.group(2) == "m":
-            board_max_size = int(match.group(1)) * 1024 * 1024
-
-    return ("%dK" % (board_max_size / 1024) if board_max_size < 1048576
-            else "%dM" % (board_max_size / 1048576))
+#
+# Helpers
+#
 
 
 def _get_board_f_flash(env):
@@ -42,6 +32,96 @@ def _get_board_f_flash(env):
     frequency = str(frequency).replace("L", "")
     return int(int(frequency) / 1000000)
 
+
+def _parse_size(value):
+    if isinstance(value, int):
+        return value
+    elif value.isdigit():
+        return int(value)
+    elif value.startswith("0x"):
+        return int(value, 16)
+    elif value[-1].upper() in ("K", "M"):
+        base = 1024 if value[-1].upper() == "K" else 1024 * 1024
+        return int(value[:-1]) * base
+    return value
+
+
+@util.memoized()
+def _parse_ld_sizes(ldscript_path):
+    assert ldscript_path
+    result = {}
+    # get flash size from board's manifest
+    result['flash_size'] = int(env.BoardConfig().get("upload.maximum_size", 0))
+    # get flash size from LD script path
+    match = re.search(r"\.flash\.(\d+[mk]).*\.ld", ldscript_path)
+    if match:
+        result['flash_size'] = _parse_size(match.group(1))
+
+    appsize_re = re.compile(
+        r"irom0_0_seg\s*:.+len\s*=\s*(0x[\da-f]+)", flags=re.I)
+    spiffs_re = re.compile(
+        r"PROVIDE\s*\(\s*_SPIFFS_(\w+)\s*=\s*(0x[\da-f]+)\s*\)", flags=re.I)
+    with open(ldscript_path) as fp:
+        for line in fp.readlines():
+            line = line.strip()
+            if not line or line.startswith("/*"):
+                continue
+            match = appsize_re.search(line)
+            if match:
+                result['app_size'] = _parse_size(match.group(1))
+                continue
+            match = spiffs_re.search(line)
+            if match:
+                result['spiffs_%s' % match.group(1)] = _parse_size(
+                    match.group(2))
+    return result
+
+
+def _get_flash_size(env):
+    ldsizes = _parse_ld_sizes(env.GetActualLDScript())
+    if ldsizes['flash_size'] < 1048576:
+        return "%dK" % (ldsizes['flash_size'] / 1024)
+    return "%dM" % (ldsizes['flash_size'] / 1048576)
+
+
+def fetch_spiffs_size(env):
+    ldsizes = _parse_ld_sizes(env.GetActualLDScript())
+    for key in ldsizes:
+        if key.startswith("spiffs_"):
+            env[key.upper()] = ldsizes[key]
+
+    assert all([
+        k in env
+        for k in ["SPIFFS_START", "SPIFFS_END", "SPIFFS_PAGE", "SPIFFS_BLOCK"]
+    ])
+
+    # esptool flash starts from 0
+    for k in ("SPIFFS_START", "SPIFFS_END"):
+        _value = 0
+        if env[k] < 0x40300000:
+            _value = env[k] & 0xFFFFF
+        elif env[k] < 0x411FB000:
+            _value = env[k] & 0xFFFFFF
+            _value -= 0x200000  # correction
+        else:
+            _value = env[k] & 0xFFFFFF
+            _value += 0xE00000  # correction
+
+        env[k] = _value
+
+
+def __fetch_spiffs_size(target, source, env):
+    fetch_spiffs_size(env)
+    return (target, source)
+
+
+def _update_max_upload_size(env):
+    ldsizes = _parse_ld_sizes(env.GetActualLDScript())
+    if ldsizes and "app_size" in ldsizes:
+        env.BoardConfig().update("upload.maximum_size", ldsizes['app_size'])
+
+
+########################################################
 
 env = DefaultEnvironment()
 platform = env.PioPlatform()
@@ -170,53 +250,15 @@ env.Replace(BUILD_FLAGS=[
     for f in env.get("BUILD_FLAGS", [])
 ])
 
-#
-# SPIFFS
-#
-
-
-def fetch_spiffs_size(env):
-    spiffs_re = re.compile(
-        r"PROVIDE\s*\(\s*_SPIFFS_(\w+)\s*=\s*(0x[\dA-F]+)\s*\)")
-    with open(env.GetActualLDScript()) as f:
-        for line in f.readlines():
-            match = spiffs_re.search(line)
-            if not match:
-                continue
-            env["SPIFFS_%s" % match.group(1).upper()] = match.group(2)
-
-    assert all([k in env for k in ["SPIFFS_START", "SPIFFS_END", "SPIFFS_PAGE",
-                                   "SPIFFS_BLOCK"]])
-
-    # esptool flash starts from 0
-    for k in ("SPIFFS_START", "SPIFFS_END"):
-        _value = 0
-        if int(env[k], 16) < 0x40300000:
-            _value = int(env[k], 16) & 0xFFFFF
-        elif int(env[k], 16) < 0x411FB000:
-            _value = int(env[k], 16) & 0xFFFFFF
-            _value -= 0x200000  # correction
-        else:
-            _value = int(env[k], 16) & 0xFFFFFF
-            _value += 0xE00000  # correction
-
-        env[k] = hex(_value)
-
-
-def __fetch_spiffs_size(target, source, env):
-    fetch_spiffs_size(env)
-    return (target, source)
-
-
 env.Append(
     BUILDERS=dict(
         DataToBin=Builder(
             action=env.VerboseAction(" ".join([
                 '"$MKSPIFFSTOOL"',
                 "-c", "$SOURCES",
-                "-p", "${int(SPIFFS_PAGE, 16)}",
-                "-b", "${int(SPIFFS_BLOCK, 16)}",
-                "-s", "${int(SPIFFS_END, 16) - int(SPIFFS_START, 16)}",
+                "-p", "$SPIFFS_PAGE",
+                "-b", "$SPIFFS_BLOCK",
+                "-s", "${SPIFFS_END - SPIFFS_START}",
                 "$TARGET"
             ]), "Building SPIFFS image from '$SOURCES' directory to $TARGET"),
             emitter=__fetch_spiffs_size,
@@ -387,6 +429,17 @@ else:
 
 AlwaysBuild(env.Alias("nobuild", target_firm))
 target_buildprog = env.Alias("buildprog", target_firm, target_firm)
+
+# update max upload size based on CSV file
+if env.get("PIOMAINPROG"):
+    env.AddPreAction(
+        "checkprogsize",
+        env.VerboseAction(
+            lambda source, target, env: _update_max_upload_size(env),
+            "Retrieving maximum program size $SOURCE"))
+# remove after PIO Core 3.6 release
+elif set(["checkprogsize", "upload"]) & set(COMMAND_LINE_TARGETS):
+    _update_max_upload_size(env)
 
 #
 # Target: Print binary size
