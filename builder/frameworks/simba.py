@@ -23,7 +23,7 @@ http://simba-os.readthedocs.org
 
 from os.path import join, sep
 
-from SCons.Script import DefaultEnvironment, SConscript
+from SCons.Script import DefaultEnvironment
 
 from platformio.builder.tools import platformio as platformio_tool
 
@@ -50,9 +50,14 @@ env = DefaultEnvironment()
 env.AddMethod(LookupSources)
 env.AddMethod(VariantDirWrap)
 
+env.Append(
+    CPPDEFINES=[
+        ("F_CPU", "$BOARD_F_CPU")
+    ]
+)
 env.Replace(
     PLATFORMFW_DIR=env.PioPlatform().get_package_dir("framework-simba")
 )
 
-SConscript(
+env.SConscript(
     [env.subst(join("$PLATFORMFW_DIR", "make", "platformio.sconscript"))])
