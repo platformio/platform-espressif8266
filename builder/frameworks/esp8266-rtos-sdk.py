@@ -31,7 +31,51 @@ platform = env.PioPlatform()
 FRAMEWORK_DIR = platform.get_package_dir("framework-esp8266-rtos-sdk")
 assert isdir(FRAMEWORK_DIR)
 
-env.Prepend(
+env.Append(
+    ASFLAGS=["-x", "assembler-with-cpp"],
+
+    CFLAGS=[
+        "-std=gnu99",
+        "-Wpointer-arith",
+        "-Wno-implicit-function-declaration",
+        "-Wl,-EL",
+        "-fno-inline-functions",
+        "-nostdlib"
+    ],
+
+    CCFLAGS=[
+        "-Os",  # optimize for size
+        "-mlongcalls",
+        "-mtext-section-literals",
+        "-falign-functions=4",
+        "-U__STRICT_ANSI__",
+        "-ffunction-sections",
+        "-fdata-sections"
+    ],
+
+    CXXFLAGS=[
+        "-fno-rtti",
+        "-fno-exceptions",
+        "-std=c++11"
+    ],
+
+    LINKFLAGS=[
+        "-Os",
+        "-nostdlib",
+        "-Wl,--no-check-sections",
+        "-Wl,-static",
+        "-Wl,--gc-sections",
+        "-u", "call_user_start",
+        "-u", "_printf_float",
+        "-u", "_scanf_float"
+    ],
+
+    CPPDEFINES=[
+        ("F_CPU", "$BOARD_F_CPU"),
+        "__ets__",
+        "ICACHE_FLASH"
+    ],
+
     CPPPATH=[
         join(FRAMEWORK_DIR, "include"),
         join(FRAMEWORK_DIR, "extra_include"),
@@ -58,8 +102,12 @@ env.Prepend(
     ]
 )
 
+# copy CCFLAGS to ASFLAGS (-x assembler-with-cpp mode)
+env.Append(ASFLAGS=env.get("CCFLAGS", [])[:])
+
 env.Replace(
     LDSCRIPT_PATH=[join(FRAMEWORK_DIR, "ld", "eagle.app.v6.ld")],
+    UPLOAD_ADDRESS="0x20000"
 )
 
 #
