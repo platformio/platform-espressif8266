@@ -15,8 +15,8 @@
 # pylint: disable=redefined-outer-name
 
 import re
-from os.path import join
 import socket
+from os.path import join
 
 
 from SCons.Script import (ARGUMENTS, COMMAND_LINE_TARGETS, AlwaysBuild,
