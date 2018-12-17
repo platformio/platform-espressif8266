@@ -15,6 +15,7 @@
 # pylint: disable=redefined-outer-name
 
 import re
+import socket
 from os.path import join
 
 
@@ -261,9 +262,10 @@ if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
     # Handle uploading via OTA
     ota_port = None
     if env.get("UPLOAD_PORT"):
-        ota_port = re.match(
-            r"\"?((([0-9]{1,3}\.){3}[0-9]{1,3})|[^\\/]+\.[^\\/]+)\"?$",
-            env.get("UPLOAD_PORT"))
+        try:
+            ota_port = socket.gethostbyname(env.get("UPLOAD_PORT"))
+        except socket.error:
+            pass
     if ota_port:
         env.Replace(UPLOADCMD="$UPLOADOTACMD")
 
