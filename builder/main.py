@@ -184,6 +184,12 @@ env.Replace(
     SIZECHECKCMD="$SIZETOOL -A -d $SOURCES",
     SIZEPRINTCMD='$SIZETOOL -B -d $SOURCES',
 
+    ERASEFLAGS=[
+        "-cp", "$UPLOAD_PORT",
+        "-cd", "$UPLOAD_RESETMETHOD"
+    ],
+    ERASECMD='esptool $ERASEFLAGS -ce',
+
     PROGSUFFIX=".elf"
 )
 
@@ -375,6 +381,17 @@ target_upload = env.Alias(
     [env.VerboseAction(env.AutodetectUploadPort, "Looking for upload port..."),
      env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")])
 env.AlwaysBuild(target_upload)
+
+#
+# Target: Erase Flash
+#
+
+AlwaysBuild(
+    env.Alias("erase", None, [
+        env.VerboseAction(env.AutodetectUploadPort,
+                          "Looking for serial port..."),
+        env.VerboseAction("$ERASECMD", "Ready for erasing")
+    ]))
 
 
 #
