@@ -17,7 +17,7 @@
     "esp8266-rtos-sdk",
     "esp8266-nonos-sdk"
   ],
-  "name": "WeMos D1 R2 & mini",
+  "name": "WeMos D1 R2 and mini",
   "upload": {
     "maximum_ram_size": 81920,
     "maximum_size": 4194304,
