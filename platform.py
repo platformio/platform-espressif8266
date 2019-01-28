@@ -12,10 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from os import getenv
+
 from platformio.managers.platform import PlatformBase
 
 
 class Espressif8266Platform(PlatformBase):
+
+    @property
+    def package_repositories(self):
+        repositories = super(
+            Espressif8266Platform, self).package_repositories or []
+        if getenv("CI", "false").lower() == "true":
+            repositories = [
+                "https://sourceforge.net/projects/platformio-storage/"
+                "files/packages/manifest.json"
+            ] + repositories
+        return repositories
 
     def configure_default_packages(self, variables, targets):
         if not variables.get("pioframework"):
