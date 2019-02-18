@@ -23,7 +23,7 @@ class Espressif8266Platform(PlatformBase):
             self.packages['sdk-esp8266']['optional'] = False
         if "buildfs" in targets:
             self.packages['tool-mkspiffs']['optional'] = False
-        if not framework or framework == "simba":
+        if not framework or "simba" in framework:
             self.packages['toolchain-xtensa']['version'] = "<2"
         return PlatformBase.configure_default_packages(
             self, variables, targets)
