@@ -41,7 +41,7 @@
   "packages": {
     "toolchain-xtensa": {
       "type": "toolchain",
-      "version": "~1.40802.0"
+      "version": "<3"
     },
     "framework-arduinoespressif8266": {
       "type": "framework",
