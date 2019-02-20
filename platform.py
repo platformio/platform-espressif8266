@@ -18,9 +18,12 @@ from platformio.managers.platform import PlatformBase
 class Espressif8266Platform(PlatformBase):
 
     def configure_default_packages(self, variables, targets):
-        if not variables.get("pioframework"):
+        framework = variables.get("pioframework")
+        if not framework:
             self.packages['sdk-esp8266']['optional'] = False
         if "buildfs" in targets:
             self.packages['tool-mkspiffs']['optional'] = False
+        if not framework or "simba" in framework:
+            self.packages['toolchain-xtensa']['version'] = "<2"
         return PlatformBase.configure_default_packages(
             self, variables, targets)

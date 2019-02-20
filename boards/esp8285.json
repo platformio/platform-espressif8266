@@ -20,7 +20,7 @@
   "name": "Generic ESP8285 Module",
   "upload": {
     "maximum_ram_size": 81920,
-    "maximum_size": 434160,
+    "maximum_size": 1048576,
     "require_upload_port": true,
     "resetmethod": "ck",
     "speed": 115200
