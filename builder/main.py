@@ -15,7 +15,7 @@
 # pylint: disable=redefined-outer-name
 
 import re
-import socket
+import sys
 from os.path import join
 
 
@@ -151,29 +151,6 @@ env.Replace(
     SDK_ESP8266_DIR=platform.get_package_dir("sdk-esp8266"),
 
     #
-    # Upload
-    #
-
-    UPLOADER="esptool",
-    UPLOADEROTA=join(platform.get_package_dir("tool-espotapy") or "",
-                     "espota.py"),
-
-    UPLOADERFLAGS=[
-        "-cd", "$UPLOAD_RESETMETHOD",
-        "-cb", "$UPLOAD_SPEED",
-        "-cp", '"$UPLOAD_PORT"'
-    ],
-    UPLOADEROTAFLAGS=[
-        "--debug",
-        "--progress",
-        "-i", "$UPLOAD_PORT",
-        "$UPLOAD_FLAGS"
-    ],
-
-    UPLOADCMD='$UPLOADER $UPLOADERFLAGS -cf $SOURCE',
-    UPLOADOTACMD='"$PYTHONEXE" "$UPLOADEROTA" $UPLOADEROTAFLAGS -f $SOURCE',
-
-    #
     # Misc
     #
 
@@ -227,11 +204,6 @@ env.Append(
     )
 )
 
-if "uploadfs" in COMMAND_LINE_TARGETS:
-    env.Append(
-        UPLOADERFLAGS=["-ca", "${hex(SPIFFS_START)}"],
-        UPLOADEROTAFLAGS=["-s"]
-    )
 
 #
 # Framework and SDK specific configuration
@@ -264,17 +236,6 @@ if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
             )
         )
     )
-
-    # Handle uploading via OTA
-    ota_port = None
-    if env.get("UPLOAD_PORT"):
-        try:
-            ota_port = socket.gethostbyname(env.get("UPLOAD_PORT"))
-        except socket.error:
-            pass
-    if ota_port:
-        env.Replace(UPLOADCMD="$UPLOADOTACMD")
-
 else:
     # ESP8266 RTOS SDK and Native SDK common configuration
     env.Append(
@@ -298,20 +259,6 @@ else:
                 suffix=".bin"
             )
         )
-    )
-
-    env.Replace(
-        UPLOADERFLAGS=[
-            "-vv",
-            "-cd", "$UPLOAD_RESETMETHOD",
-            "-cb", "$UPLOAD_SPEED",
-            "-cp", '"$UPLOAD_PORT"',
-            "-ca", "0x00000",
-            "-cf", "${SOURCES[0]}",
-            "-ca", "$UPLOAD_ADDRESS",
-            "-cf", "${SOURCES[1]}"
-        ],
-        UPLOADCMD='$UPLOADER $UPLOADERFLAGS',
     )
 
 if not env.get("PIOFRAMEWORK"):
@@ -376,11 +323,74 @@ AlwaysBuild(target_size)
 # Target: Upload firmware or SPIFFS image
 #
 
-target_upload = env.Alias(
-    ["upload", "uploadfs"], target_firm,
-    [env.VerboseAction(env.AutodetectUploadPort, "Looking for upload port..."),
-     env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")])
-env.AlwaysBuild(target_upload)
+upload_protocol = env.subst("$UPLOAD_PROTOCOL")
+upload_actions = []
+
+# Compatibility with old OTA configurations
+if (upload_protocol != "espota"
+        and re.match(r"\"?((([0-9]{1,3}\.){3}[0-9]{1,3})|[^\\/]+\.local)\"?$",
+                     env.get("UPLOAD_PORT", ""))):
+    upload_protocol = "espota"
+    sys.stderr.write(
+        "Warning! We have just detected `upload_port` as IP address or host "
+        "name of ESP device. `upload_protocol` is switched to `espota`.\n"
+        "Please specify `upload_protocol = espota` in `platformio.ini` "
+        "project configuration file.\n")
+
+if upload_protocol == "espota":
+    if not env.subst("$UPLOAD_PORT"):
+        sys.stderr.write(
+            "Error: Please specify IP address or host name of ESP device "
+            "using `upload_port` for build environment or use "
+            "global `--upload-port` option.\n"
+            "See https://docs.platformio.org/page/platforms/"
+            "espressif8266.html#over-the-air-ota-update\n")
+    env.Replace(
+        UPLOADER=join(
+            platform.get_package_dir("tool-espotapy") or "", "espota.py"),
+        UPLOADERFLAGS=["--debug", "--progress", "-i", "$UPLOAD_PORT"],
+        UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS -f $SOURCE'
+    )
+    if "uploadfs" in COMMAND_LINE_TARGETS:
+        env.Append(UPLOADERFLAGS=["-s"])
+    upload_actions = [env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")]
+
+elif upload_protocol == "esptool":
+    env.Replace(
+        UPLOADER="esptool",
+        UPLOADERFLAGS=[
+            "-cd", "$UPLOAD_RESETMETHOD",
+            "-cb", "$UPLOAD_SPEED",
+            "-cp", '"$UPLOAD_PORT"'
+        ],
+        UPLOADCMD='$UPLOADER $UPLOADERFLAGS -cf $SOURCE',
+    )
+    if env.subst("$PIOFRAMEWORK") not in ("arduino", "simba"):  # SDK
+        env.Append(
+            UPLOADERFLAGS=[
+                "-ca", "0x00000",
+                "-cf", "${SOURCES[0]}",
+                "-ca", "$UPLOAD_ADDRESS",
+                "-cf", "${SOURCES[1]}"
+            ]
+        )
+        env.Replace(UPLOADCMD="$UPLOADER $UPLOADERFLAGS")
+    elif "uploadfs" in COMMAND_LINE_TARGETS:
+        env.Append(UPLOADERFLAGS=["-ca", "${hex(SPIFFS_START)}"])
+    upload_actions = [
+        env.VerboseAction(
+            env.AutodetectUploadPort, "Looking for upload port..."),
+        env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")
+    ]
+
+# custom upload tool
+elif upload_protocol == "custom":
+    upload_actions = [env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")]
+
+else:
+    sys.stderr.write("Warning! Unknown upload protocol %s\n" % upload_protocol)
+
+env.AlwaysBuild(env.Alias(["upload", "uploadfs"], target_firm, upload_actions))
 
 #
 # Target: Erase Flash
