@@ -1,7 +1,7 @@
 {
   "build": {
     "core": "esp8266",
-    "extra_flags": "-DESP8266 -DARDUINO_ARCH_ESP8266 -DESP8266_PHOENIX_V1",
+    "extra_flags": "-DESP8266 -DARDUINO_ARCH_ESP8266 -DARDUINO_ESP8266_PHOENIX_V1",
     "f_cpu": "80000000L",
     "f_flash": "40000000L",
     "flash_mode": "dio",
