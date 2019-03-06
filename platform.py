@@ -19,8 +19,6 @@ class Espressif8266Platform(PlatformBase):
 
     def configure_default_packages(self, variables, targets):
         framework = variables.get("pioframework")
-        if not framework:
-            self.packages['sdk-esp8266']['optional'] = False
         if "buildfs" in targets:
             self.packages['tool-mkspiffs']['optional'] = False
         return PlatformBase.configure_default_packages(
