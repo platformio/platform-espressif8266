@@ -202,15 +202,21 @@ env.Append(
 #
 
 if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
+    if "simba" in env.subst("$PIOFRAMEWORK"):
+        ebootelf_path = join(
+            platform.get_package_dir("framework-simba") or "", "3pp",
+            "esp8266Arduino", "2.3.0", "bootloaders", "eboot", "eboot.elf")
+    else:
+        ebootelf_path = join(
+            platform.get_package_dir("framework-arduinoespressif8266") or "",
+            "bootloaders", "eboot", "eboot.elf")
+
     env.Append(
         BUILDERS=dict(
             ElfToBin=Builder(
                 action=env.VerboseAction(" ".join([
                     '"$OBJCOPY"',
-                    "-eo", '"%s"' % join(
-                        platform.get_package_dir(
-                            "framework-arduinoespressif8266"),
-                        "bootloaders", "eboot", "eboot.elf"),
+                    "-eo", '"%s"' % ebootelf_path,
                     "-bo", "$TARGET",
                     "-bm", "$BOARD_FLASH_MODE",
                     "-bf", "${__get_board_f_flash(__env__)}",
