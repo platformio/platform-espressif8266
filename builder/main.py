@@ -143,14 +143,6 @@ env.Replace(
     ARFLAGS=["rc"],
 
     #
-    # Packages
-    #
-
-    FRAMEWORK_ARDUINOESP8266_DIR=platform.get_package_dir(
-        "framework-arduinoespressif8266"),
-    SDK_ESP8266_DIR=platform.get_package_dir("sdk-esp8266"),
-
-    #
     # Misc
     #
 
@@ -215,9 +207,10 @@ if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
             ElfToBin=Builder(
                 action=env.VerboseAction(" ".join([
                     '"$OBJCOPY"',
-                    "-eo",
-                    '"%s"' % join("$FRAMEWORK_ARDUINOESP8266_DIR",
-                                  "bootloaders", "eboot", "eboot.elf"),
+                    "-eo", '"%s"' % join(
+                        platform.get_package_dir(
+                            "framework-arduinoespressif8266"),
+                        "bootloaders", "eboot", "eboot.elf"),
                     "-bo", "$TARGET",
                     "-bm", "$BOARD_FLASH_MODE",
                     "-bf", "${__get_board_f_flash(__env__)}",
@@ -366,14 +359,9 @@ elif upload_protocol == "esptool":
         UPLOADCMD='$UPLOADER $UPLOADERFLAGS -cf $SOURCE',
     )
     if env.subst("$PIOFRAMEWORK") not in ("arduino", "simba"):  # SDK
-        env.Append(
-            UPLOADERFLAGS=[
-                "-ca", "0x00000",
-                "-cf", "${SOURCES[0]}",
-                "-ca", "$UPLOAD_ADDRESS",
-                "-cf", "${SOURCES[1]}"
-            ]
-        )
+        for image in env.get("FLASH_EXTRA_IMAGES", []):
+            env.Append(
+                UPLOADERFLAGS=["-ca", image[0], "-cf", env.subst(image[1])])
         env.Replace(UPLOADCMD="$UPLOADER $UPLOADERFLAGS")
     elif "uploadfs" in COMMAND_LINE_TARGETS:
         env.Append(UPLOADERFLAGS=["-ca", "${hex(SPIFFS_START)}"])

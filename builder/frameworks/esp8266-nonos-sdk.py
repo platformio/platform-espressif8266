@@ -99,6 +99,14 @@ env.Append(
         "airkiss", "at", "c", "crypto", "driver", "espnow", "gcc", "json", "lwip",
         "main", "mbedtls", "mesh", "net80211", "phy", "pp", "pwm", "smartconfig",
         "ssl", "upgrade", "wpa", "wpa2", "wps"
+    ],
+
+    FLASH_EXTRA_IMAGES=[
+        ("0x00000", join("$BUILD_DIR", "eagle.flash.bin")),
+        ("0x10000", join("$BUILD_DIR", "eagle.irom0text.bin")),
+        ("0x1fc000" if env.BoardConfig().get(
+            "upload.maximum_size", 0) < 4194304 else "0x3fc000",
+            join(FRAMEWORK_DIR, "bin", "esp_init_data_default.bin"))
     ]
 )
 
@@ -106,8 +114,7 @@ env.Append(
 env.Append(ASFLAGS=env.get("CCFLAGS", [])[:])
 
 env.Replace(
-    LDSCRIPT_PATH=[join(FRAMEWORK_DIR, "ld", "eagle.app.v6.ld")],
-    UPLOAD_ADDRESS="0x10000"
+    LDSCRIPT_PATH=join(FRAMEWORK_DIR, "ld", "eagle.app.v6.ld")
 )
 
 #

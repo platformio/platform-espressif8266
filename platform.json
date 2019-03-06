@@ -76,10 +76,6 @@
       "type": "uploader",
       "optional": true,
       "version": "~1.200.0"
-    },
-    "sdk-esp8266": {
-      "optional": true,
-      "version": "~1.10502.0"
     }
   }
 }
