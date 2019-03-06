@@ -106,9 +106,34 @@ env.Append(
 env.Append(ASFLAGS=env.get("CCFLAGS", [])[:])
 
 env.Replace(
-    LDSCRIPT_PATH=[join(FRAMEWORK_DIR, "ld", "eagle.app.v6.ld")],
-    UPLOAD_ADDRESS="0x10000"
+    LDSCRIPT_PATH=join(FRAMEWORK_DIR, "ld", "eagle.app.v6.ld")
 )
+
+board_flash_size = int(env.BoardConfig().get("upload.maximum_size", 0))
+if board_flash_size > 8388608:
+    init_data_flash_address = 0xffc000  # for 16 MB
+elif board_flash_size > 4194304:
+    init_data_flash_address = 0x7fc000  # for 8 MB
+elif board_flash_size > 2097152:
+    init_data_flash_address = 0x3fc000  # for 4 MB
+elif board_flash_size > 1048576:
+    init_data_flash_address = 0x1fc000  # for 2 MB
+elif board_flash_size > 524288:
+    init_data_flash_address = 0xfc000  # for 1 MB
+else:
+    init_data_flash_address = 0x7c000  # for 512 kB
+
+env.Append(
+    FLASH_EXTRA_IMAGES=[
+        ("0x00000", join("$BUILD_DIR", "eagle.flash.bin")),
+        ("0x10000", join("$BUILD_DIR", "eagle.irom0text.bin")),
+        (hex(init_data_flash_address),
+            join(FRAMEWORK_DIR, "bin", "esp_init_data_default.bin")),
+        (hex(init_data_flash_address + 0x2000),
+            join(FRAMEWORK_DIR, "bin", "blank.bin"))
+    ]
+)
+
 
 #
 # Target: Build Driver Library

@@ -12,7 +12,7 @@
     "type": "git",
     "url": "https://github.com/platformio/platform-espressif8266.git"
   },
-  "version": "2.0.3",
+  "version": "2.0.4",
   "packageRepositories": [
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
     "http://dl.platformio.org/packages/manifest.json",
@@ -76,10 +76,6 @@
       "type": "uploader",
       "optional": true,
       "version": "~1.200.0"
-    },
-    "sdk-esp8266": {
-      "optional": true,
-      "version": "~1.10502.0"
     }
   }
 }
