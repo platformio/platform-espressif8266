@@ -5,7 +5,7 @@
     "f_cpu": "80000000L",
     "f_flash": "40000000L",
     "flash_mode": "qio",
-    "ldscript": "eagle.flash.1m256.ld",
+    "ldscript": "eagle.flash.1m.ld",
     "mcu": "esp8266",
     "variant": "nodemcu"
   },
@@ -18,7 +18,7 @@
     "esp8266-rtos-sdk",
     "esp8266-nonos-sdk"
   ],
-  "name": "CSM64F02_B 1M",
+  "name": "CHIPSEA CSM64F02_B 1M",
   "upload": {
     "maximum_ram_size": 81920,
     "maximum_size": 1048576,
