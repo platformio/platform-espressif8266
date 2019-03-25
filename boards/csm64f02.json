@@ -18,7 +18,7 @@
     "esp8266-rtos-sdk",
     "esp8266-nonos-sdk"
   ],
-  "name": "CSM64F02",
+  "name": "CHIPSEA CSM64F02",
   "upload": {
     "maximum_ram_size": 81920,
     "maximum_size": 2097152,
