@@ -153,10 +153,12 @@ env.Replace(
     SIZEPRINTCMD='$SIZETOOL -B -d $SOURCES',
 
     ERASEFLAGS=[
-        "-cp", "$UPLOAD_PORT",
-        "-cd", "$UPLOAD_RESETMETHOD"
+        "--chip", "esp8266",
+        "--port", '"$UPLOAD_PORT"'
     ],
-    ERASECMD='esptool $ERASEFLAGS -ce',
+    ERASETOOL=join(
+        platform.get_package_dir("tool-esptoolpy") or "", "esptool.py"),
+    ERASECMD='"$PYTHONEXE" "$ERASETOOL" $ERASEFLAGS erase_flash',
 
     PROGSUFFIX=".elf"
 )
@@ -311,24 +313,34 @@ if upload_protocol == "espota":
 
 elif upload_protocol == "esptool":
     env.Replace(
-        UPLOADER="esptool",
+        UPLOADER=join(
+            platform.get_package_dir("tool-esptoolpy") or "", "esptool.py"),
         UPLOADERFLAGS=[
-            "-cd", "$UPLOAD_RESETMETHOD",
-            "-cb", "$UPLOAD_SPEED",
-            "-cp", '"$UPLOAD_PORT"'
+            "--chip", "esp8266",
+            "--port", '"$UPLOAD_PORT"',
+            "--baud", "$UPLOAD_SPEED",
+            "write_flash"
         ],
-        UPLOADCMD='$UPLOADER $UPLOADERFLAGS -cf $SOURCE',
+        UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS 0 $SOURCE'
     )
-    if env.subst("$PIOFRAMEWORK") not in ("arduino", "simba"):  # SDK
-        for image in env.get("FLASH_EXTRA_IMAGES", []):
-            env.Append(
-                UPLOADERFLAGS=["-ca", image[0], "-cf", env.subst(image[1])])
-        env.Replace(UPLOADCMD="$UPLOADER $UPLOADERFLAGS")
-    elif "uploadfs" in COMMAND_LINE_TARGETS:
-        env.Append(UPLOADERFLAGS=["-ca", "${hex(SPIFFS_START)}"])
+    for image in env.get("FLASH_EXTRA_IMAGES", []):
+        env.Append(UPLOADERFLAGS=[image[0], env.subst(image[1])])
+
+    if "uploadfs" in COMMAND_LINE_TARGETS:
+        env.Replace(
+            UPLOADERFLAGS=[
+                "--chip", "esp8266",
+                "--port", '"$UPLOAD_PORT"',
+                "--baud", "$UPLOAD_SPEED",
+                "write_flash",
+                "$SPIFFS_START"
+            ],
+            UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS $SOURCE',
+        )
+
     upload_actions = [
-        env.VerboseAction(
-            env.AutodetectUploadPort, "Looking for upload port..."),
+        env.VerboseAction(env.AutodetectUploadPort,
+                          "Looking for upload port..."),
         env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")
     ]
 
@@ -349,7 +361,7 @@ AlwaysBuild(
     env.Alias("erase", None, [
         env.VerboseAction(env.AutodetectUploadPort,
                           "Looking for serial port..."),
-        env.VerboseAction("$ERASECMD", "Ready for erasing")
+        env.VerboseAction("$ERASECMD", "Erasing...")
     ]))
 
 
