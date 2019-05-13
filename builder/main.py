@@ -136,7 +136,6 @@ env.Replace(
     CC="xtensa-lx106-elf-gcc",
     CXX="xtensa-lx106-elf-g++",
     GDB="xtensa-lx106-elf-gdb",
-    OBJCOPY="esptool",
     RANLIB="xtensa-lx106-elf-ranlib",
     SIZETOOL="xtensa-lx106-elf-size",
 
@@ -148,7 +147,7 @@ env.Replace(
 
     MKSPIFFSTOOL="mkspiffs",
 
-    SIZEPROGREGEXP=r"^(?:\.irom0\.text|\.text|\.data|\.rodata|)\s+([0-9]+).*",
+    SIZEPROGREGEXP=r"^(?:\.irom0\.text|\.text|\.text1|\.data|\.rodata|)\s+([0-9]+).*",
     SIZEDATAREGEXP=r"^(?:\.data|\.rodata|\.bss)\s+([0-9]+).*",
     SIZECHECKCMD="$SIZETOOL -A -d $SOURCES",
     SIZEPRINTCMD='$SIZETOOL -B -d $SOURCES',
@@ -192,79 +191,38 @@ env.Append(
             emitter=__fetch_spiffs_size,
             source_factory=env.Dir,
             suffix=".bin"
+        ),
+
+        # Default for ESP8266 RTOS SDK and Native SDK common configuration
+        # Frameworks may override "ElfToBin" builder
+        ElfToBin=Builder(
+            action=env.VerboseAction(" ".join([
+                'esptool',
+                "-eo", "$SOURCES",
+                "-bo", "${TARGETS[0]}",
+                "-bm", "$BOARD_FLASH_MODE",
+                "-bf", "${__get_board_f_flash(__env__)}",
+                "-bz", "${__get_flash_size(__env__)}",
+                "-bs", ".text",
+                "-bs", ".data",
+                "-bs", ".rodata",
+                "-bc", "-ec",
+                "-eo", "$SOURCES",
+                "-es", ".irom0.text", "${TARGETS[1]}",
+                "-ec", "-v"
+            ]), "Building $TARGET"),
+            suffix=".bin"
         )
     )
 )
 
 
 #
-# Framework and SDK specific configuration
-#
-
-if env.subst("$PIOFRAMEWORK") in ("arduino", "simba"):
-    if "simba" in env.subst("$PIOFRAMEWORK"):
-        ebootelf_path = join(
-            platform.get_package_dir("framework-simba") or "", "3pp",
-            "esp8266Arduino", "2.3.0", "bootloaders", "eboot", "eboot.elf")
-    else:
-        ebootelf_path = join(
-            platform.get_package_dir("framework-arduinoespressif8266") or "",
-            "bootloaders", "eboot", "eboot.elf")
-
-    env.Append(
-        BUILDERS=dict(
-            ElfToBin=Builder(
-                action=env.VerboseAction(" ".join([
-                    '"$OBJCOPY"',
-                    "-eo", '"%s"' % ebootelf_path,
-                    "-bo", "$TARGET",
-                    "-bm", "$BOARD_FLASH_MODE",
-                    "-bf", "${__get_board_f_flash(__env__)}",
-                    "-bz", "${__get_flash_size(__env__)}",
-                    "-bs", ".text",
-                    "-bp", "4096",
-                    "-ec",
-                    "-eo", "$SOURCES",
-                    "-bs", ".irom0.text",
-                    "-bs", ".text",
-                    "-bs", ".data",
-                    "-bs", ".rodata",
-                    "-bc", "-ec"
-                ]), "Building $TARGET"),
-                suffix=".bin"
-            )
-        )
-    )
-else:
-    # ESP8266 RTOS SDK and Native SDK common configuration
-    env.Append(
-        BUILDERS=dict(
-            ElfToBin=Builder(
-                action=env.VerboseAction(" ".join([
-                    '"$OBJCOPY"',
-                    "-eo", "$SOURCES",
-                    "-bo", "${TARGETS[0]}",
-                    "-bm", "$BOARD_FLASH_MODE",
-                    "-bf", "${__get_board_f_flash(__env__)}",
-                    "-bz", "${__get_flash_size(__env__)}",
-                    "-bs", ".text",
-                    "-bs", ".data",
-                    "-bs", ".rodata",
-                    "-bc", "-ec",
-                    "-eo", "$SOURCES",
-                    "-es", ".irom0.text", "${TARGETS[1]}",
-                    "-ec", "-v"
-                ]), "Building $TARGET"),
-                suffix=".bin"
-            )
-        )
-    )
-
-#
 # Target: Build executable and linkable firmware or SPIFFS image
 #
 
 target_elf = env.BuildProgram()
+
 if "nobuild" in COMMAND_LINE_TARGETS:
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
         fetch_spiffs_size(env)
