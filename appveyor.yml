@@ -6,12 +6,13 @@ environment:
     - PLATFORMIO_PROJECT_DIR: "examples/arduino-webserver"
     - PLATFORMIO_PROJECT_DIR: "examples/arduino-wifiscan"
     - PLATFORMIO_PROJECT_DIR: "examples/esp8266-rtos-sdk-blink"
+    - PLATFORMIO_PROJECT_DIR: "examples/esp8266-nonos-sdk-blink"
     - PLATFORMIO_PROJECT_DIR: "examples/simba-blink"
 
 install:
 - cmd: git submodule update --init --recursive
-- cmd: SET PATH=%PATH%;C:\Python27\Scripts
-- cmd: pip install -U https://github.com/platformio/platformio/archive/develop.zip
+- cmd: SET PATH=%PATH%;C:\Python36\Scripts
+- cmd: pip3 install -U https://github.com/platformio/platformio/archive/develop.zip
 - cmd: platformio platform install file://.
 
 test_script:
