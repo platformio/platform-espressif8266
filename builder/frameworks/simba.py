@@ -23,7 +23,7 @@ http://simba-os.readthedocs.org
 
 from os.path import join, sep
 
-from SCons.Script import DefaultEnvironment
+from SCons.Script import Builder, DefaultEnvironment
 
 from platformio.builder.tools import platformio as platformio_tool
 
@@ -50,13 +50,41 @@ env = DefaultEnvironment()
 env.AddMethod(LookupSources)
 env.AddMethod(VariantDirWrap)
 
+env.Replace(
+    PLATFORMFW_DIR=env.PioPlatform().get_package_dir("framework-simba"),
+    OBJCOPY="esptool"
+)
+
 env.Append(
     CPPDEFINES=[
         ("F_CPU", "$BOARD_F_CPU")
-    ]
-)
-env.Replace(
-    PLATFORMFW_DIR=env.PioPlatform().get_package_dir("framework-simba")
+    ],
+
+    BUILDERS=dict(
+        ElfToBin=Builder(
+            action=env.VerboseAction(" ".join([
+                'esptool',
+                "-eo", '"%s"' % join(
+                    "$PLATFORMFW_DIR", "3pp", "esp8266Arduino", "2.3.0",
+                    "bootloaders", "eboot", "eboot.elf"
+                ),
+                "-bo", "$TARGET",
+                "-bm", "$BOARD_FLASH_MODE",
+                "-bf", "${__get_board_f_flash(__env__)}",
+                "-bz", "${__get_flash_size(__env__)}",
+                "-bs", ".text",
+                "-bp", "4096",
+                "-ec",
+                "-eo", "$SOURCES",
+                "-bs", ".irom0.text",
+                "-bs", ".text",
+                "-bs", ".data",
+                "-bs", ".rodata",
+                "-bc", "-ec"
+            ]), "Building $TARGET"),
+            suffix=".bin"
+        )
+    )
 )
 
 env.SConscript(
