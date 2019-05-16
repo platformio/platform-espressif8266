@@ -23,7 +23,7 @@ https://github.com/espressif/ESP8266_RTOS_SDK
 
 from os.path import isdir, join
 
-from SCons.Script import DefaultEnvironment
+from SCons.Script import Builder, DefaultEnvironment
 
 env = DefaultEnvironment()
 platform = env.PioPlatform()
@@ -99,7 +99,28 @@ env.Append(
         "cirom", "crypto", "driver", "espconn", "espnow", "freertos", "gcc",
         "json", "hal", "lwip", "main", "mesh", "mirom", "net80211", "nopoll",
         "phy", "pp", "pwm", "smartconfig", "spiffs", "ssl", "wpa", "wps"
-    ]
+    ],
+
+    BUILDERS=dict(
+        ElfToBin=Builder(
+            action=env.VerboseAction(" ".join([
+                'esptool',
+                "-eo", "$SOURCE",
+                "-bo", "${TARGET}",
+                "-bm", "$BOARD_FLASH_MODE",
+                "-bf", "${__get_board_f_flash(__env__)}",
+                "-bz", "${__get_flash_size(__env__)}",
+                "-bs", ".text",
+                "-bs", ".data",
+                "-bs", ".rodata",
+                "-bc", "-ec",
+                "-eo", "$SOURCE",
+                "-es", ".irom0.text", "${TARGET}.irom0text.bin",
+                "-ec", "-v"
+            ]), "Building $TARGET"),
+            suffix=".bin"
+        )
+    )
 )
 
 # copy CCFLAGS to ASFLAGS (-x assembler-with-cpp mode)
@@ -126,8 +147,7 @@ else:
 
 env.Append(
     FLASH_EXTRA_IMAGES=[
-        ("0x00000", join("$BUILD_DIR", "eagle.flash.bin")),
-        ("0x20000", join("$BUILD_DIR", "eagle.irom0text.bin")),
+        ("0x20000", join("$BUILD_DIR", "${PROGNAME}.bin.irom0text.bin")),
         (hex(init_data_flash_address),
             join(FRAMEWORK_DIR, "bin", "esp_init_data_default.bin")),
         (hex(init_data_flash_address + 0x2000),
