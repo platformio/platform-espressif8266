@@ -87,8 +87,7 @@ env.Append(
         join(FRAMEWORK_DIR, "include", "nopoll"),
         join(FRAMEWORK_DIR, "include", "ssl"),
         join(FRAMEWORK_DIR, "include", "json"),
-        join(FRAMEWORK_DIR, "include", "openssl"),
-        join("$SDK_ESP8266_DIR", "include"), "$PROJECTSRC_DIR"
+        join(FRAMEWORK_DIR, "include", "openssl")
     ],
 
     LIBPATH=[
