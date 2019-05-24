@@ -21,7 +21,7 @@
     "maximum_size": 1048576,
     "require_upload_port": true,
     "resetmethod": "nodemcu",
-    "speed": 921600
+    "speed": 115200
   },
   "url": "https://wiki.wemos.cc/products:d1:d1_mini_lite",
   "vendor": "WEMOS"

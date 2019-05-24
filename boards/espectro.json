@@ -23,7 +23,7 @@
     "maximum_size": 4194304,
     "require_upload_port": true,
     "resetmethod": "nodemcu",
-    "speed": 921600
+    "speed": 115200
   },
   "url": "https://shop.makestro.com/en/product/espectro-core/",
   "vendor": "DycodeX"
