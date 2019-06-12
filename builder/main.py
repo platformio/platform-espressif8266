@@ -19,7 +19,7 @@ import sys
 from os.path import join
 
 
-from SCons.Script import (ARGUMENTS, COMMAND_LINE_TARGETS, AlwaysBuild,
+from SCons.Script import (COMMAND_LINE_TARGETS, AlwaysBuild,
                           Builder, Default, DefaultEnvironment)
 from platformio import util
 
@@ -200,15 +200,16 @@ env.Append(
 # Target: Build executable and linkable firmware or SPIFFS image
 #
 
-target_elf = env.BuildProgram()
-
+target_elf = None
 if "nobuild" in COMMAND_LINE_TARGETS:
+    target_elf = join("$BUILD_DIR", "${PROGNAME}.elf")
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
         fetch_spiffs_size(env)
         target_firm = join("$BUILD_DIR", "spiffs.bin")
     else:
         target_firm = join("$BUILD_DIR", "${PROGNAME}.bin")
 else:
+    target_elf = env.BuildProgram()
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
         target_firm = env.DataToBin(
             join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
