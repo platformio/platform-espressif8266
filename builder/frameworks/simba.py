@@ -53,7 +53,7 @@ env.AddMethod(VariantDirWrap)
 
 env.Replace(
     PLATFORMFW_DIR=platform.get_package_dir("framework-simba"),
-    OBJCOPY=platform.get_package_dir("tool-esptool")
+    OBJCOPY=join(platform.get_package_dir("tool-esptool"), "esptool")
 )
 
 env.Append(
@@ -64,7 +64,7 @@ env.Append(
     BUILDERS=dict(
         ElfToBin=Builder(
             action=env.VerboseAction(" ".join([
-                platform.get_package_dir("tool-esptool"),
+                join(platform.get_package_dir("tool-esptool"), "esptool"),
                 "-eo", '"%s"' % join(
                     "$PLATFORMFW_DIR", "3pp", "esp8266Arduino", "2.3.0",
                     "bootloaders", "eboot", "eboot.elf"
