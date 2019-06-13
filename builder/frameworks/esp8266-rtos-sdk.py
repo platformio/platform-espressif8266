@@ -104,7 +104,7 @@ env.Append(
     BUILDERS=dict(
         ElfToBin=Builder(
             action=env.VerboseAction(" ".join([
-                'esptool',
+                platform.get_package_dir("tool-esptool"),
                 "-eo", "$SOURCE",
                 "-bo", "${TARGET}",
                 "-bm", "$BOARD_FLASH_MODE",
