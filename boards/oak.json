@@ -21,7 +21,7 @@
     "maximum_size": 4194304,
     "require_upload_port": true,
     "resetmethod": "ck",
-    "speed": 921600
+    "speed": 115200
   },
   "url": "http://digistump.com/category/22",
   "vendor": "DigiStump"
