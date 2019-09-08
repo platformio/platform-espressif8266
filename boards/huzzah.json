@@ -24,7 +24,7 @@
     "maximum_size": 4194304,
     "require_upload_port": true,
     "resetmethod": "nodemcu",
-    "speed": 115200
+    "speed": 460800
   },
   "url": "https://www.adafruit.com/products/2471",
   "vendor": "Adafruit"

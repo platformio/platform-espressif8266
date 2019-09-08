@@ -23,7 +23,7 @@
     "maximum_size": 4194304,
     "require_upload_port": true,
     "resetmethod": "nodemcu",
-    "speed": 115200
+    "speed": 460800
   },
   "url": "http://www.thaieasyelec.com/products/wireless-modules/wifi-modules/espino-wifi-development-board-detail.html",
   "vendor": "ThaiEasyElec"

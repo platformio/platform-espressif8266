@@ -23,7 +23,7 @@
     "maximum_size": 524288,
     "require_upload_port": true,
     "resetmethod": "ck",
-    "speed": 115200
+    "speed": 460800
   },
   "url": "http://www.4dsystems.com.au/product/gen4_IoD/",
   "vendor": "4D Systems"

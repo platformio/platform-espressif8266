@@ -23,7 +23,7 @@
     "maximum_size": 524288,
     "require_upload_port": true,
     "resetmethod": "ck",
-    "speed": 115200
+    "speed": 460800
   },
   "url": "https://www.sparkfun.com/products/13231",
   "vendor": "SparkFun"

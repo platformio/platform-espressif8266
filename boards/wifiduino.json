@@ -23,7 +23,7 @@
     "maximum_size": 4194304,
     "require_upload_port": true,
     "resetmethod": "nodemcu",
-    "speed": 115200
+    "speed": 460800
   },
   "url": "https://www.facebook.com/WifiDuino/",
   "vendor": "WifiDuino"
