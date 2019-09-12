@@ -62,6 +62,8 @@ def _parse_ld_sizes(ldscript_path):
         r"irom0_0_seg\s*:.+len\s*=\s*(0x[\da-f]+)", flags=re.I)
     spiffs_re = re.compile(
         r"PROVIDE\s*\(\s*_SPIFFS_(\w+)\s*=\s*(0x[\da-f]+)\s*\)", flags=re.I)
+    fs_re = re.compile(
+        r"PROVIDE\s*\(\s*_FS_(\w+)\s*=\s*(0x[\da-f]+)\s*\)", flags=re.I)
     with open(ldscript_path) as fp:
         for line in fp.readlines():
             line = line.strip()
@@ -75,6 +77,13 @@ def _parse_ld_sizes(ldscript_path):
             if match:
                 result['spiffs_%s' % match.group(1)] = _parse_size(
                     match.group(2))
+            else:
+                # if spiffs_ failed to match try fs_
+                match = fs_re.search(line)
+                if match:
+                    result['spiffs_%s' % match.group(1)] = _parse_size(
+                        match.group(2))
+
     return result
 
 
@@ -89,6 +98,8 @@ def fetch_spiffs_size(env):
     ldsizes = _parse_ld_sizes(env.GetActualLDScript())
     for key in ldsizes:
         if key.startswith("spiffs_"):
+            env[key.upper()] = ldsizes[key]
+        elif key.startswith("fs_"):
             env[key.upper()] = ldsizes[key]
 
     assert all([
