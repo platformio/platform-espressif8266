@@ -15,7 +15,7 @@
   "version": "2.2.3",
   "packageRepositories": [
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
-    "http://dl.platformio.org/packages/manifest.json",
+    "https://dl.platformio.org/packages/manifest.json",
     "https://raw.githubusercontent.com/eerimoq/simba/master/make/platformio/manifest.json",
     "https://raw.githubusercontent.com/yanbe/framework-esp8266-rtos-sdk/master/manifest.json",
     "https://raw.githubusercontent.com/sanderv32/framework-esp8266-nonos-sdk/master/manifest.json"
