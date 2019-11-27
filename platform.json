@@ -12,7 +12,7 @@
     "type": "git",
     "url": "https://github.com/platformio/platform-espressif8266.git"
   },
-  "version": "2.2.3",
+  "version": "2.3.0",
   "packageRepositories": [
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
     "http://dl.platformio.org/packages/manifest.json",
@@ -41,12 +41,12 @@
   "packages": {
     "toolchain-xtensa": {
       "type": "toolchain",
-      "version": "<3"
+      "version": "~2.40802.191122"
     },
     "framework-arduinoespressif8266": {
       "type": "framework",
       "optional": true,
-      "version": "~2.20502.0"
+      "version": "~2.20601.0"
     },
     "framework-esp8266-rtos-sdk": {
       "type": "framework",
@@ -69,7 +69,7 @@
     },
     "tool-esptoolpy": {
       "type": "uploader",
-      "version": "~1.20600.0"
+      "version": "~1.20800.0"
     },
     "tool-mkspiffs": {
       "type": "uploader",
