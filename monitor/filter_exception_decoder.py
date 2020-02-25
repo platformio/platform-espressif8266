@@ -234,13 +234,15 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
                 result.append(None)
                 continue
 
+            to_append = None
             try:
                 output = subprocess.check_output(args + [ addr.encode(enc) ]).decode(enc).strip()
-                result.append(self.strip_project_dir(output))
+                if output != "?? ??:0":
+                    to_append = self.strip_project_dir(output)
             except subprocess.CalledProcessError as e:
                 sys.stderr.write("%s: failed to call %s: %s\n" %
                     (self.__class__.__name__, self.addr2line_path, e))
-                result.append(None)
+            result.append(to_append)
         return result
 
     def strip_project_dir(self, trace):
