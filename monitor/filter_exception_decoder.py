@@ -17,16 +17,19 @@ import re
 import subprocess
 import sys
 
+from platformio.commands.device import DeviceMonitorFilter
 from platformio.compat import get_filesystem_encoding, path_to_unicode
 from platformio.project.exception import PlatformioException
 from platformio.project.helpers import load_project_ide_data
-from platformio.commands.device import DeviceMonitorFilter
 
 
 # By design, __init__ is called inside miniterm and we can't pass context to it.
 # pylint: disable=attribute-defined-outside-init
 
-class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-instance-attributes
+
+class Esp8266ExceptionDecoder(
+    DeviceMonitorFilter
+):  # pylint: disable=too-many-instance-attributes
     NAME = "esp8266_exception_decoder"
 
     # https://github.com/esp8266/esp8266-wiki/wiki/Memory-Map
@@ -44,10 +47,10 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
         "Illegal instruction",
         "SYSCALL instruction",
         "InstructionFetchError: Processor internal physical address or data error during "
-            "instruction fetch",
+        "instruction fetch",
         "LoadStoreError: Processor internal physical address or data error during load or store",
         "Level1Interrupt: Level-1 interrupt as indicated by set level-1 bits in "
-            "the INTERRUPT register",
+        "the INTERRUPT register",
         "Alloca: MOVSP instruction, if caller's registers are not in the register file",
         "IntegerDivideByZero: QUOS, QUOU, REMS, or REMU divisor operand is zero",
         "reserved",
@@ -62,22 +65,22 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
         "InstTLBMiss: Error during Instruction TLB refill",
         "InstTLBMultiHit: Multiple instruction TLB entries matched",
         "InstFetchPrivilege: An instruction fetch referenced a virtual address at a ring level "
-            "less than CRING",
+        "less than CRING",
         "reserved",
         "InstFetchProhibited: An instruction fetch referenced a page mapped with an attribute "
-            "that does not permit instruction fetch",
+        "that does not permit instruction fetch",
         "reserved",
         "reserved",
         "reserved",
         "LoadStoreTLBMiss: Error during TLB refill for a load or store",
         "LoadStoreTLBMultiHit: Multiple TLB entries matched for a load or store",
         "LoadStorePrivilege: A load or store referenced a virtual address at a ring level "
-            "less than CRING",
+        "less than CRING",
         "reserved",
         "LoadProhibited: A load referenced a page mapped with an attribute that does not "
-            "permit loads",
+        "permit loads",
         "StoreProhibited: A store referenced a page mapped with an attribute that does not "
-            "permit stores",
+        "permit stores",
     )
 
     def __call__(self):
@@ -87,12 +90,24 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
         self.no_match_counter = 0
         self.stack_lines = []
 
-        self.exception_re = re.compile(r"^([0-9]{1,2})\):\n([a-z0-9]+=0x[0-9a-f]{8} ?)+$")
+        self.exception_re = re.compile(
+            r"^([0-9]{1,2})\):\n([a-z0-9]+=0x[0-9a-f]{8} ?)+$"
+        )
         self.stack_re = re.compile(r"^[0-9a-f]{8}:\s+([0-9a-f]{8} ?)+ *$")
 
         self.firmware_path = None
         self.addr2line_path = None
         self.enabled = self.setup_paths()
+
+        if self.config.get("env:" + self.environment, "build_type") != "debug":
+            print(
+                """
+Please build project in debug configuration to get more details about an exception.
+See https://docs.platformio.org/page/projectconf/build_configurations.html
+
+"""
+            )
+
         return self
 
     def setup_paths(self):
@@ -101,8 +116,10 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
             data = load_project_ide_data(self.project_dir, self.environment)
             self.firmware_path = data["prog_path"]
             if not os.path.isfile(self.firmware_path):
-                sys.stderr.write("%s: firmware at %s does not exist, rebuild the project?\n" %
-                    (self.__class__.__name__, self.firmware_path))
+                sys.stderr.write(
+                    "%s: firmware at %s does not exist, rebuild the project?\n"
+                    % (self.__class__.__name__, self.firmware_path)
+                )
                 return False
 
             cc_path = data.get("cc_path", "")
@@ -112,10 +129,14 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
                     self.addr2line_path = path
                     return True
         except PlatformioException as e:
-            sys.stderr.write("%s: disabling, exception while looking for addr2line: %s\n" %
-                (self.__class__.__name__, e))
+            sys.stderr.write(
+                "%s: disabling, exception while looking for addr2line: %s\n"
+                % (self.__class__.__name__, e)
+            )
             return False
-        sys.stderr.write("%s: disabling, failed to find addr2line.\n" % self.__class__.__name__)
+        sys.stderr.write(
+            "%s: disabling, failed to find addr2line.\n" % self.__class__.__name__
+        )
         return False
 
     def rx(self, text):
@@ -134,12 +155,12 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
             if self.buffer:
                 line = self.buffer + line
                 self.buffer = ""
-            last = idx+1
+            last = idx + 1
 
             extra = self.process_line(line)
             self.previous_line = line
             if extra is not None:
-                text = text[:idx+1] + extra + text[idx+1:]
+                text = text[: idx + 1] + extra + text[idx + 1 :]
                 last += len(extra)
         return text
 
@@ -154,10 +175,12 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
         except ValueError:
             return False
 
-    def process_line(self, line): # pylint: disable=too-many-return-statements
+    def process_line(self, line):  # pylint: disable=too-many-return-statements
         if self.state == self.STATE_DEFAULT:
             if self.previous_line.startswith(self.EXCEPTION_MARKER):
-                two_lines = self.previous_line[len(self.EXCEPTION_MARKER):] + "\n" + line
+                two_lines = (
+                    self.previous_line[len(self.EXCEPTION_MARKER) :] + "\n" + line
+                )
                 match = self.exception_re.match(two_lines)
                 if match is not None:
                     self.advance_state()
@@ -180,8 +203,8 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
         self.no_match_counter += 1
         if self.no_match_counter > 4:
             self.state = self.STATE_DEFAULT
-            results = [ self.take_stack_lines(), self.process_line(line) ]
-            results = [ r for r in results if r is not None ]
+            results = [self.take_stack_lines(), self.process_line(line)]
+            results = [r for r in results if r is not None]
             if results:
                 return "\n".join(results)
         return None
@@ -196,14 +219,16 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
             pass
 
         header = match.group(0)
-        registers = header[header.index("\n")+1:].split()
-        pairs = [ reg.split("=", 2) for reg in registers ]
+        registers = header[header.index("\n") + 1 :].split()
+        pairs = [reg.split("=", 2) for reg in registers]
 
-        lines = self.get_lines([ p[1] for p in pairs ])
+        lines = self.get_lines([p[1] for p in pairs])
 
         for i, p in enumerate(pairs):
             if lines[i] is not None:
-                l = lines[i].replace("\n", "\n    ") # newlines happen with inlined methods
+                l = lines[i].replace(
+                    "\n", "\n    "
+                )  # newlines happen with inlined methods
                 extra += "  %s=%s in %s\n" % (p[0], p[1], l)
         return extra
 
@@ -211,7 +236,7 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
         if len(self.stack_lines) > 128:
             return
 
-        addresses = line[line.index(":")+1:].split()
+        addresses = line[line.index(":") + 1 :].split()
         lines = self.get_lines(addresses)
         for i, l in enumerate(lines):
             if l is not None:
@@ -227,8 +252,8 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
     def get_lines(self, addresses):
         result = []
         enc = get_filesystem_encoding()
-        args = ( self.addr2line_path, "-fipC", "-e", self.firmware_path )
-        args = [ a.encode(enc) for a in args ]
+        args = (self.addr2line_path, "-fipC", "-e", self.firmware_path)
+        args = [a.encode(enc) for a in args]
         for addr in addresses:
             if not self.is_addr_ok(addr):
                 result.append(None)
@@ -236,12 +261,18 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
 
             to_append = None
             try:
-                output = subprocess.check_output(args + [ addr.encode(enc) ]).decode(enc).strip()
+                output = (
+                    subprocess.check_output(args + [addr.encode(enc)])
+                    .decode(enc)
+                    .strip()
+                )
                 if output != "?? ??:0":
                     to_append = self.strip_project_dir(output)
             except subprocess.CalledProcessError as e:
-                sys.stderr.write("%s: failed to call %s: %s\n" %
-                    (self.__class__.__name__, self.addr2line_path, e))
+                sys.stderr.write(
+                    "%s: failed to call %s: %s\n"
+                    % (self.__class__.__name__, self.addr2line_path, e)
+                )
             result.append(to_append)
         return result
 
@@ -250,5 +281,5 @@ class Esp8266ExceptionDecoder(DeviceMonitorFilter): # pylint: disable=too-many-i
             idx = trace.find(self.project_dir)
             if idx == -1:
                 break
-            trace = trace[:idx] + trace[idx+len(self.project_dir)+1:]
+            trace = trace[:idx] + trace[idx + len(self.project_dir) + 1 :]
         return trace
