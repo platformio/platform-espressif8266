@@ -91,7 +91,8 @@ env.Append(
     ],
 
     LIBPATH=[
-        join(FRAMEWORK_DIR, "lib")
+        join(FRAMEWORK_DIR, "lib"),
+        join(FRAMEWORK_DIR, "ld")
     ],
 
     LIBS=[
@@ -103,7 +104,7 @@ env.Append(
     BUILDERS=dict(
         ElfToBin=Builder(
             action=env.VerboseAction(" ".join([
-                join(platform.get_package_dir("tool-esptool"), "esptool"),
+                '"%s"' % join(platform.get_package_dir("tool-esptool"), "esptool"),
                 "-eo", "$SOURCE",
                 "-bo", "${TARGET}",
                 "-bm", "$BOARD_FLASH_MODE",
