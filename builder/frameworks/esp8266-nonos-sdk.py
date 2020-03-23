@@ -91,7 +91,8 @@ env.Append(
     ],
 
     LIBPATH=[
-        join(FRAMEWORK_DIR, "lib")
+        join(FRAMEWORK_DIR, "lib"),
+        join(FRAMEWORK_DIR, "ld")
     ],
 
     LIBS=[
