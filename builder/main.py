@@ -205,13 +205,13 @@ if "nobuild" in COMMAND_LINE_TARGETS:
     target_elf = join("$BUILD_DIR", "${PROGNAME}.elf")
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
         fetch_spiffs_size(env)
-        target_firm = join("$BUILD_DIR", "spiffs.bin")
+        target_firm = join("$BUILD_DIR", "%s.bin" % env.get("SPIFFSNAME", "spiffs"))
     else:
         target_firm = join("$BUILD_DIR", "${PROGNAME}.bin")
 else:
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
         target_firm = env.DataToBin(
-            join("$BUILD_DIR", "spiffs"), "$PROJECTDATA_DIR")
+            join("$BUILD_DIR", env.get("SPIFFSNAME", "spiffs")), "$PROJECTDATA_DIR")
         AlwaysBuild(target_firm)
         AlwaysBuild(env.Alias("buildfs", target_firm))
     else:
