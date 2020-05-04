@@ -122,6 +122,19 @@ def _update_max_upload_size(env):
         env.BoardConfig().update("upload.maximum_size", ldsizes['app_size'])
 
 
+def get_esptoolpy_reset_flags(resetmethod):
+    # no dtr, no_sync
+    resets = ("no_reset_no_sync", "soft_reset")
+    if resetmethod == "nodemcu":
+        # dtr
+        resets = ("default_reset", "hard_reset")
+    elif resetmethod == "ck":
+        # no dtr
+        resets = ("no_reset", "soft_reset")
+
+    return ["--before", resets[0], "--after", resets[1]]
+
+
 ########################################################
 
 env = DefaultEnvironment()
@@ -304,6 +317,10 @@ elif upload_protocol == "esptool":
             ],
             UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS $SOURCE',
         )
+
+    env.Prepend(
+        UPLOADERFLAGS=get_esptoolpy_reset_flags(env.subst("$UPLOAD_RESETMETHOD"))
+    )
 
     upload_actions = [
         env.VerboseAction(env.AutodetectUploadPort,
