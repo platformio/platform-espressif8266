@@ -156,7 +156,7 @@ See https://docs.platformio.org/page/projectconf/build_configurations.html
                 self.buffer = ""
             last = idx + 1
 
-            if line[-1] == "\r":
+            if line and line[-1] == "\r":
                 line = line[:-1]
 
             extra = self.process_line(line)
