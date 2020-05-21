@@ -37,8 +37,7 @@ class Esp8266ExceptionDecoder(
     ADDR_MAX = 0x40300000
 
     STATE_DEFAULT = 0
-    STATE_READ_EXCEPTION = 1
-    STATE_IN_STACK = 2
+    STATE_IN_STACK = 1
 
     EXCEPTION_MARKER = "Exception ("
 
@@ -157,6 +156,9 @@ See https://docs.platformio.org/page/projectconf/build_configurations.html
                 self.buffer = ""
             last = idx + 1
 
+            if line[-1] == "\r":
+                line = line[:-1]
+
             extra = self.process_line(line)
             self.previous_line = line
             if extra is not None:
@@ -177,19 +179,18 @@ See https://docs.platformio.org/page/projectconf/build_configurations.html
 
     def process_line(self, line):  # pylint: disable=too-many-return-statements
         if self.state == self.STATE_DEFAULT:
+            extra = None
             if self.previous_line.startswith(self.EXCEPTION_MARKER):
                 two_lines = (
                     self.previous_line[len(self.EXCEPTION_MARKER) :] + "\n" + line
                 )
                 match = self.exception_re.match(two_lines)
                 if match is not None:
-                    self.advance_state()
-                    return self.process_exception_match(match)
-            return None
-        elif self.state == self.STATE_READ_EXCEPTION:
+                    extra = self.process_exception_match(match)
+
             if line == ">>>stack>>>":
                 self.advance_state()
-                return None
+            return extra
         elif self.state == self.STATE_IN_STACK:
             if line == "<<<stack<<<":
                 self.state = self.STATE_DEFAULT
