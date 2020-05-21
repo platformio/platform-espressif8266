@@ -157,6 +157,9 @@ See https://docs.platformio.org/page/projectconf/build_configurations.html
                 self.buffer = ""
             last = idx + 1
 
+            if line[-1] == "\r":
+                line = line[:-1]
+
             extra = self.process_line(line)
             self.previous_line = line
             if extra is not None:
