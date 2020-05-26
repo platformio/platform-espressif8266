@@ -75,6 +75,11 @@
       "type": "uploader",
       "optional": true,
       "version": "~1.200.0"
+    },
+    "tool-mklittlefs": {
+      "type": "uploader",
+      "optional": true,
+      "version": "~1.203.0"
     }
   }
 }
