@@ -213,7 +213,7 @@ env.Append(
 # Target: Build executable and linkable firmware or SPIFFS image
 #
 
-target_elf = env.BuildProgram()
+target_elf = None
 if "nobuild" in COMMAND_LINE_TARGETS:
     target_elf = join("$BUILD_DIR", "${PROGNAME}.elf")
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
@@ -222,6 +222,7 @@ if "nobuild" in COMMAND_LINE_TARGETS:
     else:
         target_firm = join("$BUILD_DIR", "${PROGNAME}.bin")
 else:
+    target_elf = env.BuildProgram()
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
         target_firm = env.DataToBin(
             join("$BUILD_DIR", env.get("SPIFFSNAME", "spiffs")), "$PROJECTDATA_DIR")
