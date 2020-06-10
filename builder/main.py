@@ -138,6 +138,7 @@ def get_esptoolpy_reset_flags(resetmethod):
 ########################################################
 
 env = DefaultEnvironment()
+env.SConscript("compat.py", exports="env")
 platform = env.PioPlatform()
 
 env.Replace(
@@ -227,11 +228,11 @@ else:
         target_firm = env.DataToBin(
             join("$BUILD_DIR", env.get("SPIFFSNAME", "spiffs")), "$PROJECTDATA_DIR")
         AlwaysBuild(target_firm)
-        AlwaysBuild(env.Alias("buildfs", target_firm))
     else:
         target_firm = env.ElfToBin(
             join("$BUILD_DIR", "${PROGNAME}"), target_elf)
 
+env.AddPlatformTarget("buildfs", target_firm, None, "Build Filesystem Image")
 AlwaysBuild(env.Alias("nobuild", target_firm))
 target_buildprog = env.Alias("buildprog", target_firm, target_firm)
 
@@ -250,10 +251,13 @@ elif set(["checkprogsize", "upload"]) & set(COMMAND_LINE_TARGETS):
 # Target: Print binary size
 #
 
-target_size = env.Alias(
-    "size", target_elf,
-    env.VerboseAction("$SIZEPRINTCMD", "Calculating size $SOURCE"))
-AlwaysBuild(target_size)
+target_size = env.AddPlatformTarget(
+    "size",
+    target_elf,
+    env.VerboseAction("$SIZEPRINTCMD", "Calculating size $SOURCE"),
+    "Program Size",
+    "Calculate program size",
+)
 
 #
 # Target: Upload firmware or SPIFFS image
@@ -336,19 +340,24 @@ elif upload_protocol == "custom":
 else:
     sys.stderr.write("Warning! Unknown upload protocol %s\n" % upload_protocol)
 
-env.AlwaysBuild(env.Alias(["upload", "uploadfs"], target_firm, upload_actions))
+env.AddPlatformTarget("upload", target_firm, upload_actions, "Upload")
+env.AddPlatformTarget("uploadfs", target_firm, upload_actions, "Upload Filesystem Image")
+env.AddPlatformTarget(
+    "uploadfsota", target_firm, upload_actions, "Upload Filesystem Image OTA")
 
 #
 # Target: Erase Flash
 #
 
-AlwaysBuild(
-    env.Alias("erase", None, [
-        env.VerboseAction(env.AutodetectUploadPort,
-                          "Looking for serial port..."),
+env.AddPlatformTarget(
+    "erase",
+    None,
+    [
+        env.VerboseAction(env.AutodetectUploadPort, "Looking for serial port..."),
         env.VerboseAction("$ERASECMD", "Erasing...")
-    ]))
-
+    ],
+    "Erase Flash",
+)
 
 #
 # Information about obsolete method of specifying linker scripts
