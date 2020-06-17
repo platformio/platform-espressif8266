@@ -12,7 +12,7 @@
     "type": "git",
     "url": "https://github.com/platformio/platform-espressif8266.git"
   },
-  "version": "2.5.2",
+  "version": "2.5.3",
   "packageRepositories": [
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
     "http://dl.platformio.org/packages/manifest.json",
@@ -31,11 +31,17 @@
     },
     "esp8266-rtos-sdk": {
       "package": "framework-esp8266-rtos-sdk",
-      "script": "builder/frameworks/esp8266-rtos-sdk.py"
+      "script": "builder/frameworks/esp8266-rtos-sdk.py",
+      "description": "ESP8266 SDK based on FreeRTOS, a truly free professional grade RTOS for microcontrollers",
+      "url": "https://github.com/espressif/ESP8266_RTOS_SDK",
+      "title": "ESP8266 RTOS SDK"
     },
     "esp8266-nonos-sdk": {
       "package": "framework-esp8266-nonos-sdk",
-      "script": "builder/frameworks/esp8266-nonos-sdk.py"
+      "script": "builder/frameworks/esp8266-nonos-sdk.py",
+      "description": "The non-OS SDK provides a set of application programming interfaces (APIs) for core ESP8266 functionalities such as data reception/transmission over Wi-Fi, TCP/IP stack functions, hardware interface functions and basic system management functions",
+      "url": "https://github.com/espressif/ESP8266_NONOS_SDK",
+      "title": "ESP8266 Non-OS SDK"
     }
   },
   "packages": {
