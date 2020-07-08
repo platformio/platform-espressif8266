@@ -144,6 +144,8 @@ def get_esptoolpy_reset_flags(resetmethod):
 env = DefaultEnvironment()
 env.SConscript("compat.py", exports="env")
 platform = env.PioPlatform()
+board = env.BoardConfig()
+filesystem = board.get("build.filesystem", "spiffs")
 
 env.Replace(
     __get_flash_size=_get_flash_size,
@@ -161,10 +163,16 @@ env.Replace(
     ARFLAGS=["rc"],
 
     #
-    # Misc
+    # Filesystem
     #
 
-    MKFSTOOL="mklittlefs",
+    MKFSTOOL="mk%s" % filesystem,
+    ESP8266_FS_IMAGE_NAME=env.get("ESP8266_FS_IMAGE_NAME", env.get(
+        "SPIFFSNAME", filesystem)),
+
+    #
+    # Misc
+    #
 
     SIZEPROGREGEXP=r"^(?:\.irom0\.text|\.text|\.text1|\.data|\.rodata|)\s+([0-9]+).*",
     SIZEDATAREGEXP=r"^(?:\.data|\.rodata|\.bss)\s+([0-9]+).*",
@@ -223,14 +231,17 @@ if "nobuild" in COMMAND_LINE_TARGETS:
     target_elf = join("$BUILD_DIR", "${PROGNAME}.elf")
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
         fetch_fs_size(env)
-        target_firm = join("$BUILD_DIR", "%s.bin" % env.get("FSIMAGENAME", "fs"))
+        target_firm = join("$BUILD_DIR", "${ESP8266_FS_IMAGE_NAME}.bin")
     else:
         target_firm = join("$BUILD_DIR", "${PROGNAME}.bin")
 else:
     target_elf = env.BuildProgram()
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        if filesystem not in ("littlefs", "spiffs"):
+            sys.stderr.write("Filesystem %s is not supported!\n" % filesystem)
+            env.Exit(1)
         target_firm = env.DataToBin(
-            join("$BUILD_DIR", env.get("FSIMAGENAME", "fs")), "$PROJECTDATA_DIR")
+            join("$BUILD_DIR", "${ESP8266_FS_IMAGE_NAME}"), "$PROJECTDATA_DIR")
         AlwaysBuild(target_firm)
     else:
         target_firm = env.ElfToBin(
