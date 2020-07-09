@@ -60,8 +60,12 @@ def _parse_ld_sizes(ldscript_path):
 
     appsize_re = re.compile(
         r"irom0_0_seg\s*:.+len\s*=\s*(0x[\da-f]+)", flags=re.I)
-    spiffs_re = re.compile(
-        r"PROVIDE\s*\(\s*_SPIFFS_(\w+)\s*=\s*(0x[\da-f]+)\s*\)", flags=re.I)
+    filesystem_re = re.compile(
+        r"PROVIDE\s*\(\s*_%s_(\w+)\s*=\s*(0x[\da-f]+)\s*\)" % "FS"
+        if "arduino" in env.subst("$PIOFRAMEWORK")
+        else "SPIFFS",
+        flags=re.I,
+    )
     with open(ldscript_path) as fp:
         for line in fp.readlines():
             line = line.strip()
@@ -71,9 +75,9 @@ def _parse_ld_sizes(ldscript_path):
             if match:
                 result['app_size'] = _parse_size(match.group(1))
                 continue
-            match = spiffs_re.search(line)
+            match = filesystem_re.search(line)
             if match:
-                result['spiffs_%s' % match.group(1)] = _parse_size(
+                result['fs_%s' % match.group(1)] = _parse_size(
                     match.group(2))
     return result
 
@@ -85,19 +89,19 @@ def _get_flash_size(env):
     return "%dM" % (ldsizes['flash_size'] / 1048576)
 
 
-def fetch_spiffs_size(env):
+def fetch_fs_size(env):
     ldsizes = _parse_ld_sizes(env.GetActualLDScript())
     for key in ldsizes:
-        if key.startswith("spiffs_"):
+        if key.startswith("fs_"):
             env[key.upper()] = ldsizes[key]
 
     assert all([
         k in env
-        for k in ["SPIFFS_START", "SPIFFS_END", "SPIFFS_PAGE", "SPIFFS_BLOCK"]
+        for k in ["FS_START", "FS_END", "FS_PAGE", "FS_BLOCK"]
     ])
 
     # esptool flash starts from 0
-    for k in ("SPIFFS_START", "SPIFFS_END"):
+    for k in ("FS_START", "FS_END"):
         _value = 0
         if env[k] < 0x40300000:
             _value = env[k] & 0xFFFFF
@@ -111,8 +115,8 @@ def fetch_spiffs_size(env):
         env[k] = _value
 
 
-def __fetch_spiffs_size(target, source, env):
-    fetch_spiffs_size(env)
+def __fetch_fs_size(target, source, env):
+    fetch_fs_size(env)
     return (target, source)
 
 
@@ -140,6 +144,8 @@ def get_esptoolpy_reset_flags(resetmethod):
 env = DefaultEnvironment()
 env.SConscript("compat.py", exports="env")
 platform = env.PioPlatform()
+board = env.BoardConfig()
+filesystem = board.get("build.filesystem", "spiffs")
 
 env.Replace(
     __get_flash_size=_get_flash_size,
@@ -157,10 +163,16 @@ env.Replace(
     ARFLAGS=["rc"],
 
     #
-    # Misc
+    # Filesystem
     #
 
-    MKSPIFFSTOOL="mkspiffs",
+    MKFSTOOL="mk%s" % filesystem,
+    ESP8266_FS_IMAGE_NAME=env.get("ESP8266_FS_IMAGE_NAME", env.get(
+        "SPIFFSNAME", filesystem)),
+
+    #
+    # Misc
+    #
 
     SIZEPROGREGEXP=r"^(?:\.irom0\.text|\.text|\.text1|\.data|\.rodata|)\s+([0-9]+).*",
     SIZEDATAREGEXP=r"^(?:\.data|\.rodata|\.bss)\s+([0-9]+).*",
@@ -195,14 +207,14 @@ env.Append(
     BUILDERS=dict(
         DataToBin=Builder(
             action=env.VerboseAction(" ".join([
-                '"$MKSPIFFSTOOL"',
+                '"$MKFSTOOL"',
                 "-c", "$SOURCES",
-                "-p", "$SPIFFS_PAGE",
-                "-b", "$SPIFFS_BLOCK",
-                "-s", "${SPIFFS_END - SPIFFS_START}",
+                "-p", "$FS_PAGE",
+                "-b", "$FS_BLOCK",
+                "-s", "${FS_END - FS_START}",
                 "$TARGET"
-            ]), "Building SPIFFS image from '$SOURCES' directory to $TARGET"),
-            emitter=__fetch_spiffs_size,
+            ]), "Building file system image from '$SOURCES' directory to $TARGET"),
+            emitter=__fetch_fs_size,
             source_factory=env.Dir,
             suffix=".bin"
         )
@@ -211,22 +223,25 @@ env.Append(
 
 
 #
-# Target: Build executable and linkable firmware or SPIFFS image
+# Target: Build executable and linkable firmware or file system image
 #
 
 target_elf = None
 if "nobuild" in COMMAND_LINE_TARGETS:
     target_elf = join("$BUILD_DIR", "${PROGNAME}.elf")
     if set(["uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
-        fetch_spiffs_size(env)
-        target_firm = join("$BUILD_DIR", "%s.bin" % env.get("SPIFFSNAME", "spiffs"))
+        fetch_fs_size(env)
+        target_firm = join("$BUILD_DIR", "${ESP8266_FS_IMAGE_NAME}.bin")
     else:
         target_firm = join("$BUILD_DIR", "${PROGNAME}.bin")
 else:
     target_elf = env.BuildProgram()
     if set(["buildfs", "uploadfs", "uploadfsota"]) & set(COMMAND_LINE_TARGETS):
+        if filesystem not in ("littlefs", "spiffs"):
+            sys.stderr.write("Filesystem %s is not supported!\n" % filesystem)
+            env.Exit(1)
         target_firm = env.DataToBin(
-            join("$BUILD_DIR", env.get("SPIFFSNAME", "spiffs")), "$PROJECTDATA_DIR")
+            join("$BUILD_DIR", "${ESP8266_FS_IMAGE_NAME}"), "$PROJECTDATA_DIR")
         AlwaysBuild(target_firm)
     else:
         target_firm = env.ElfToBin(
@@ -260,7 +275,7 @@ target_size = env.AddPlatformTarget(
 )
 
 #
-# Target: Upload firmware or SPIFFS image
+# Target: Upload firmware or filesystem image
 #
 
 upload_protocol = env.subst("$UPLOAD_PROTOCOL")
@@ -318,7 +333,7 @@ elif upload_protocol == "esptool":
                 "--port", '"$UPLOAD_PORT"',
                 "--baud", "$UPLOAD_SPEED",
                 "write_flash",
-                "$SPIFFS_START"
+                "$FS_START"
             ],
             UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS $SOURCE',
         )
