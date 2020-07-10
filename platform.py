@@ -23,6 +23,7 @@ class Espressif8266Platform(PlatformBase):
             self.packages['toolchain-xtensa']['version'] = "~1.40802.0"
         if "buildfs" in targets:
             self.packages['tool-mkspiffs']['optional'] = False
+            self.packages['tool-mklittlefs']['optional'] = False
         return PlatformBase.configure_default_packages(
             self, variables, targets)
 
