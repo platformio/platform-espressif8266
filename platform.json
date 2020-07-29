@@ -4,6 +4,12 @@
   "description": "Espressif Systems is a privately held fabless semiconductor company. They provide wireless communications and Wi-Fi chips which are widely used in mobile devices and the Internet of Things applications.",
   "homepage": "https://espressif.com/",
   "license": "Apache-2.0",
+  "keywords": [
+      "dev-platform",
+      "Wi-Fi",
+      "Xtensa",
+      "106Micro"
+  ],
   "engines": {
     "platformio": "<5"
   },
@@ -11,7 +17,7 @@
     "type": "git",
     "url": "https://github.com/platformio/platform-espressif8266.git"
   },
-  "version": "2.6.0",
+  "version": "2.6.1",
   "packageRepositories": [
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
     "http://dl.platformio.org/packages/manifest.json",
@@ -51,7 +57,7 @@
     "framework-arduinoespressif8266": {
       "type": "framework",
       "optional": true,
-      "version": "~3.20702.0"
+      "version": "~3.20703.0"
     },
     "framework-esp8266-rtos-sdk": {
       "type": "framework",
