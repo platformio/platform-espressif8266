@@ -5,10 +5,10 @@
   "homepage": "https://espressif.com/",
   "license": "Apache-2.0",
   "keywords": [
-      "dev-platform",
-      "Wi-Fi",
-      "Xtensa",
-      "106Micro"
+    "dev-platform",
+    "Wi-Fi",
+    "Xtensa",
+    "106Micro"
   ],
   "engines": {
     "platformio": "<5"
@@ -52,44 +52,53 @@
   "packages": {
     "toolchain-xtensa": {
       "type": "toolchain",
+      "owner": "platformio",
       "version": "~2.40802.191122"
     },
     "framework-arduinoespressif8266": {
       "type": "framework",
       "optional": true,
+      "owner": "platformio",
       "version": "~3.20704.0"
     },
     "framework-esp8266-rtos-sdk": {
       "type": "framework",
       "optional": true,
+      "owner": "platformio",
       "version": ">=1.5.0-beta"
     },
     "framework-esp8266-nonos-sdk": {
       "type": "framework",
       "optional": true,
+      "owner": "platformio",
       "version": ">=2.1.0"
     },
     "framework-simba": {
       "type": "framework",
       "optional": true,
+      "owner": "platformio",
       "version": ">=7.0.0"
     },
     "tool-esptool": {
       "type": "uploader",
+      "owner": "platformio",
       "version": "<2"
     },
     "tool-esptoolpy": {
       "type": "uploader",
+      "owner": "platformio",
       "version": "~1.20800.0"
     },
     "tool-mkspiffs": {
       "type": "uploader",
       "optional": true,
+      "owner": "platformio",
       "version": "~1.200.0"
     },
     "tool-mklittlefs": {
       "type": "uploader",
       "optional": true,
+      "owner": "platformio",
       "version": "~1.203.0"
     }
   }
