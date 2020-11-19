@@ -80,7 +80,7 @@
     "tool-esptoolpy": {
       "type": "uploader",
       "owner": "platformio",
-      "version": "~1.20800.0"
+      "version": "~1.30000.0"
     },
     "tool-mkspiffs": {
       "type": "uploader",
