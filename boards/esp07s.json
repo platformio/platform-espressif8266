@@ -1,7 +1,7 @@
 {
   "build": {
     "arduino": {
-      "ldscript": "eagle.flash.1m256.ld"
+      "ldscript": "eagle.flash.4m1m.ld"
     },
     "core": "esp8266",
     "extra_flags": "-DESP8266 -DARDUINO_ARCH_ESP8266 -DARDUINO_ESP8266_ESP07",
@@ -9,7 +9,7 @@
     "f_flash": "40000000L",
     "flash_mode": "qio",
     "mcu": "esp8266",
-    "variant": "generic"
+    "variant": "nodemcu"
   },
   "connectivity": [
     "wifi"
@@ -19,12 +19,12 @@
     "esp8266-rtos-sdk",
     "esp8266-nonos-sdk"
   ],
-  "name": "Espressif Generic ESP8266 ESP-07 1MB",
+  "name": "Espressif Generic ESP8266 ESP-07S",
   "upload": {
     "maximum_ram_size": 81920,
-    "maximum_size": 1048576,
+    "maximum_size": 4194304,
     "require_upload_port": true,
-    "resetmethod": "ck",
+    "resetmethod": "nodemcu",
     "speed": 115200
   },
   "url": "http://www.esp8266.com/wiki/doku.php?id=esp8266-module-family#esp-07",
