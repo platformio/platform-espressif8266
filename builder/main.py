@@ -246,6 +246,7 @@ else:
     else:
         target_firm = env.ElfToBin(
             join("$BUILD_DIR", "${PROGNAME}"), target_elf)
+        env.Depends(target_firm, "checkprogsize")
 
 env.AddPlatformTarget("buildfs", target_firm, None, "Build Filesystem Image")
 AlwaysBuild(env.Alias("nobuild", target_firm))
