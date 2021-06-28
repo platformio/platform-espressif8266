@@ -46,14 +46,14 @@
     "toolchain-xtensa": {
       "type": "toolchain",
       "owner": "platformio",
-      "version": "~2.100200.0",
+      "version": "~2.100300.0",
       "optionalVersions": ["~1.40802.0"]
     },
     "framework-arduinoespressif8266": {
       "type": "framework",
       "optional": true,
       "owner": "platformio",
-      "version": "~3.30000.0"
+      "version": "~3.30001.0"
     },
     "framework-esp8266-rtos-sdk": {
       "type": "framework",
