@@ -53,7 +53,7 @@
       "type": "framework",
       "optional": true,
       "owner": "platformio",
-      "version": "~3.30001.0"
+      "version": "~3.30002.0"
     },
     "framework-esp8266-rtos-sdk": {
       "type": "framework",
