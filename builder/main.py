@@ -241,7 +241,7 @@ else:
             sys.stderr.write("Filesystem %s is not supported!\n" % filesystem)
             env.Exit(1)
         target_firm = env.DataToBin(
-            join("$BUILD_DIR", "${ESP8266_FS_IMAGE_NAME}"), "$PROJECTDATA_DIR")
+            join("$BUILD_DIR", "${ESP8266_FS_IMAGE_NAME}"), "$PROJECT_DATA_DIR")
         AlwaysBuild(target_firm)
     else:
         target_firm = env.ElfToBin(
