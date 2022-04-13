@@ -18,7 +18,7 @@ import subprocess
 import sys
 
 from platformio.commands.device import DeviceMonitorFilter
-from platformio.compat import path_to_unicode, WINDOWS, PY2
+from platformio.compat import path_to_unicode, WINDOWS
 from platformio.project.exception import PlatformioException
 from platformio.project.helpers import load_project_ide_data
 
@@ -255,16 +255,11 @@ See https://docs.platformio.org/page/projectconf/build_configurations.html
 
         enc = "mbcs" if WINDOWS else "utf-8"
         args = [self.addr2line_path, u"-fipC", u"-e", self.firmware_path]
-        if PY2:
-            args = [a.encode(enc) for a in args]
 
         for addr in addresses:
             if not self.is_addr_ok(addr):
                 result.append(None)
                 continue
-
-            if PY2:
-                addr = addr.encode(enc)
 
             to_append = None
             try:
