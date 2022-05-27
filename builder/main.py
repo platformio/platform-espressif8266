@@ -14,6 +14,7 @@
 
 # pylint: disable=redefined-outer-name
 
+import functools
 import re
 import sys
 from os.path import join
@@ -21,7 +22,6 @@ from os.path import join
 
 from SCons.Script import (COMMAND_LINE_TARGETS, AlwaysBuild,
                           Builder, Default, DefaultEnvironment)
-from platformio import util
 
 #
 # Helpers
@@ -47,7 +47,7 @@ def _parse_size(value):
     return value
 
 
-@util.memoized()
+@functools.lru_cache
 def _parse_ld_sizes(ldscript_path):
     assert ldscript_path
     result = {}

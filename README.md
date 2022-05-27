@@ -1,4 +1,4 @@
-# Espressif 8266: development platform for [PlatformIO](http://platformio.org)
+# Espressif 8266: development platform for [PlatformIO](https://platformio.org)
 
 [![Build Status](https://github.com/platformio/platform-espressif8266/workflows/Examples/badge.svg)](https://github.com/platformio/platform-espressif8266/actions)
 
@@ -9,7 +9,7 @@ Espressif Systems is a privately held fabless semiconductor company. They provid
 
 # Usage
 
-1. [Install PlatformIO](http://platformio.org)
+1. [Install PlatformIO](https://platformio.org)
 2. Create PlatformIO project and configure a platform option in [platformio.ini](https://docs.platformio.org/page/projectconf.html) file:
 
 ## Stable version
