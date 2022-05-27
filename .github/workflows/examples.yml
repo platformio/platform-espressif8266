@@ -16,7 +16,6 @@ jobs:
           - "examples/arduino-wifiscan"
           - "examples/esp8266-nonos-sdk-blink"
           - "examples/esp8266-rtos-sdk-blink"
-          - "examples/simba-blink"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2

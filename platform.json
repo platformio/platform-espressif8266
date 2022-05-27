@@ -23,10 +23,6 @@
       "package": "framework-arduinoespressif8266",
       "script": "builder/frameworks/arduino.py"
     },
-    "simba": {
-      "package": "framework-simba",
-      "script": "builder/frameworks/simba.py"
-    },
     "esp8266-rtos-sdk": {
       "package": "framework-esp8266-rtos-sdk",
       "script": "builder/frameworks/esp8266-rtos-sdk.py",
@@ -66,12 +62,6 @@
       "optional": true,
       "owner": "platformio",
       "version": ">=2.1.0"
-    },
-    "framework-simba": {
-      "type": "framework",
-      "optional": true,
-      "owner": "platformio",
-      "version": ">=7.0.0"
     },
     "tool-esptool": {
       "type": "uploader",
