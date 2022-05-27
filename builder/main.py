@@ -142,7 +142,6 @@ def get_esptoolpy_reset_flags(resetmethod):
 ########################################################
 
 env = DefaultEnvironment()
-env.SConscript("compat.py", exports="env")
 platform = env.PioPlatform()
 board = env.BoardConfig()
 filesystem = board.get("build.filesystem", "spiffs")
