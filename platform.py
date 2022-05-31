@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from platformio.managers.platform import PlatformBase
+from platformio.public import PlatformBase
 
 
 class Espressif8266Platform(PlatformBase):
@@ -24,11 +24,10 @@ class Espressif8266Platform(PlatformBase):
         if "buildfs" in targets:
             self.packages['tool-mkspiffs']['optional'] = False
             self.packages['tool-mklittlefs']['optional'] = False
-        return PlatformBase.configure_default_packages(
-            self, variables, targets)
+        return super().configure_default_packages(variables, targets)
 
     def get_boards(self, id_=None):
-        result = PlatformBase.get_boards(self, id_)
+        result = super().get_boards(id_)
         if not result:
             return result
         if id_:

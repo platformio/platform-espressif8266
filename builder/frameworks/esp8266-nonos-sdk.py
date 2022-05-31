@@ -31,7 +31,12 @@ FRAMEWORK_DIR = platform.get_package_dir("framework-esp8266-nonos-sdk")
 assert isdir(FRAMEWORK_DIR)
 
 env.Append(
-    ASFLAGS=["-x", "assembler-with-cpp"],
+    ASFLAGS=[
+        "-mlongcalls",
+    ],
+    ASPPFLAGS=[
+        "-x", "assembler-with-cpp",
+    ],
 
     CFLAGS=[
         "-std=gnu99",
@@ -122,9 +127,6 @@ env.Append(
         )
     )
 )
-
-# copy CCFLAGS to ASFLAGS (-x assembler-with-cpp mode)
-env.Append(ASFLAGS=env.get("CCFLAGS", [])[:])
 
 if not env.BoardConfig().get("build.ldscript", ""):
     env.Replace(

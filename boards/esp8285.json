@@ -9,7 +9,7 @@
     "f_flash": "40000000L",
     "flash_mode": "dout",
     "mcu": "esp8266",
-    "variant": "generic"
+    "variant": "esp8285"
   },
   "connectivity": [
     "wifi"

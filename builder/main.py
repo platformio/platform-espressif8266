@@ -14,6 +14,7 @@
 
 # pylint: disable=redefined-outer-name
 
+import functools
 import re
 import sys
 from os.path import join
@@ -21,7 +22,6 @@ from os.path import join
 
 from SCons.Script import (COMMAND_LINE_TARGETS, AlwaysBuild,
                           Builder, Default, DefaultEnvironment)
-from platformio import util
 
 #
 # Helpers
@@ -47,7 +47,7 @@ def _parse_size(value):
     return value
 
 
-@util.memoized()
+@functools.lru_cache
 def _parse_ld_sizes(ldscript_path):
     assert ldscript_path
     result = {}
@@ -142,7 +142,6 @@ def get_esptoolpy_reset_flags(resetmethod):
 ########################################################
 
 env = DefaultEnvironment()
-env.SConscript("compat.py", exports="env")
 platform = env.PioPlatform()
 board = env.BoardConfig()
 filesystem = board.get("build.filesystem", "spiffs")
@@ -241,7 +240,8 @@ else:
             sys.stderr.write("Filesystem %s is not supported!\n" % filesystem)
             env.Exit(1)
         target_firm = env.DataToBin(
-            join("$BUILD_DIR", "${ESP8266_FS_IMAGE_NAME}"), "$PROJECTDATA_DIR")
+            join("$BUILD_DIR", "${ESP8266_FS_IMAGE_NAME}"), "$PROJECT_DATA_DIR")
+        env.NoCache(target_firm)
         AlwaysBuild(target_firm)
     else:
         target_firm = env.ElfToBin(

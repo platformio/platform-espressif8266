@@ -17,18 +17,21 @@ import re
 import subprocess
 import sys
 
-from platformio.commands.device import DeviceMonitorFilter
-from platformio.compat import path_to_unicode, WINDOWS, PY2
 from platformio.project.exception import PlatformioException
-from platformio.project.helpers import load_project_ide_data
+from platformio.public import (
+    DeviceMonitorFilterBase,
+    load_build_metadata,
+)
 
 
 # By design, __init__ is called inside miniterm and we can't pass context to it.
 # pylint: disable=attribute-defined-outside-init
 
+IS_WINDOWS = sys.platform.startswith("win")
+
 
 class Esp8266ExceptionDecoder(
-    DeviceMonitorFilter
+    DeviceMonitorFilterBase
 ):  # pylint: disable=too-many-instance-attributes
     NAME = "esp8266_exception_decoder"
 
@@ -110,9 +113,9 @@ See https://docs.platformio.org/page/projectconf/build_configurations.html
         return self
 
     def setup_paths(self):
-        self.project_dir = path_to_unicode(os.path.abspath(self.project_dir))
+        self.project_dir = os.path.abspath(self.project_dir)
         try:
-            data = load_project_ide_data(self.project_dir, self.environment)
+            data = load_build_metadata(self.project_dir, self.environment)
             self.firmware_path = data["prog_path"]
             if not os.path.isfile(self.firmware_path):
                 sys.stderr.write(
@@ -253,18 +256,13 @@ See https://docs.platformio.org/page/projectconf/build_configurations.html
     def get_lines(self, addresses):
         result = []
 
-        enc = "mbcs" if WINDOWS else "utf-8"
+        enc = "mbcs" if IS_WINDOWS else "utf-8"
         args = [self.addr2line_path, u"-fipC", u"-e", self.firmware_path]
-        if PY2:
-            args = [a.encode(enc) for a in args]
 
         for addr in addresses:
             if not self.is_addr_ok(addr):
                 result.append(None)
                 continue
-
-            if PY2:
-                addr = addr.encode(enc)
 
             to_append = None
             try:
