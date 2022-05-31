@@ -241,6 +241,7 @@ else:
             env.Exit(1)
         target_firm = env.DataToBin(
             join("$BUILD_DIR", "${ESP8266_FS_IMAGE_NAME}"), "$PROJECT_DATA_DIR")
+        env.NoCache(target_firm)
         AlwaysBuild(target_firm)
     else:
         target_firm = env.ElfToBin(
