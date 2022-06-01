@@ -47,7 +47,7 @@ def _parse_size(value):
     return value
 
 
-@functools.lru_cache
+@functools.lru_cache(maxsize=None)
 def _parse_ld_sizes(ldscript_path):
     assert ldscript_path
     result = {}
