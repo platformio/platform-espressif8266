@@ -14,7 +14,6 @@
 
 # pylint: disable=redefined-outer-name
 
-import functools
 import re
 import sys
 from os.path import join
@@ -47,7 +46,6 @@ def _parse_size(value):
     return value
 
 
-@functools.lru_cache
 def _parse_ld_sizes(ldscript_path):
     assert ldscript_path
     result = {}
