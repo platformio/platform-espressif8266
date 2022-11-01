@@ -251,6 +251,7 @@ else:
 env.AddPlatformTarget("buildfs", target_firm, target_firm, "Build Filesystem Image")
 AlwaysBuild(env.Alias("nobuild", target_firm))
 target_buildprog = env.Alias("buildprog", target_firm, target_firm)
+env.AddPlatformTarget("ota", target_firm, target_firm, "Build Espressif OTA images")
 
 # update max upload size based on CSV file
 if env.get("PIOMAINPROG"):
@@ -325,6 +326,10 @@ elif upload_protocol == "esptool":
         UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS 0x0 $SOURCE'
     )
     for image in env.get("FLASH_EXTRA_IMAGES", []):
+        if image[0]=='0x0':        # a bootloader is furnished. clean the UPLOADCMD
+            env.Replace(
+                UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS'
+            )
         env.Append(UPLOADERFLAGS=[image[0], env.subst(image[1])])
 
     if "uploadfs" in COMMAND_LINE_TARGETS:

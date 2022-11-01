@@ -63,6 +63,11 @@
       "owner": "platformio",
       "version": "~3.0.4"
     },
+    "tool-genbin": {
+      "type": "uploader",
+      "owner": "platformio",
+      "version": "~1.0.0"
+    },
     "tool-esptool": {
       "type": "uploader",
       "owner": "platformio",
