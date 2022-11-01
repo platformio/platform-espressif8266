@@ -61,7 +61,8 @@ env.Append(
     CXXFLAGS=[
         "-fno-rtti",
         "-fno-exceptions",
-        "-std=c++11"
+        "-std=c++11",
+        "-Wno-literal-suffix"
     ],
 
     LINKFLAGS=[
@@ -83,16 +84,8 @@ env.Append(
 
     CPPPATH=[
         join(FRAMEWORK_DIR, "include"),
-        join(FRAMEWORK_DIR, "extra_include"),
         join(FRAMEWORK_DIR, "driver_lib", "include"),
-        join(FRAMEWORK_DIR, "include", "espressif"),
-        join(FRAMEWORK_DIR, "include", "lwip"),
-        join(FRAMEWORK_DIR, "include", "lwip", "ipv4"),
-        join(FRAMEWORK_DIR, "include", "lwip", "ipv6"),
-        join(FRAMEWORK_DIR, "include", "nopoll"),
-        join(FRAMEWORK_DIR, "include", "ssl"),
-        join(FRAMEWORK_DIR, "include", "json"),
-        join(FRAMEWORK_DIR, "include", "openssl")
+        join(FRAMEWORK_DIR, "third_party", "include")
     ],
 
     LIBPATH=[
@@ -102,7 +95,7 @@ env.Append(
 
     LIBS=[
         "airkiss", "at", "c", "crypto", "driver", "espnow", "gcc", "json",
-        "lwip", "main", "mbedtls", "mesh", "net80211", "phy", "pp", "pwm",
+        "lwip", "main", "mbedtls", "net80211", "phy", "pp", "pwm",
         "smartconfig", "ssl", "upgrade", "wpa", "wpa2", "wps"
     ],
 
@@ -164,9 +157,10 @@ env.Append(
 
 libs = []
 
-libs.append(env.BuildLibrary(
-    join(FRAMEWORK_DIR, "lib", "driver"),
-    join(FRAMEWORK_DIR, "driver_lib")
-))
+if False:
+    libs.append(env.BuildLibrary(
+        join(FRAMEWORK_DIR, "lib", "driver"),
+        join(FRAMEWORK_DIR, "driver_lib")
+    ))
 
 env.Prepend(LIBS=libs)
