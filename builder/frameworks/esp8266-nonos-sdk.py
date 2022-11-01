@@ -20,7 +20,7 @@ ESP8266 SDK C/C++ only
 https://github.com/espressif/ESP8266_NONOS_SDK
 """
 
-from os.path import isdir, join
+from os.path import isdir, join, isfile
 
 from SCons.Script import Builder, DefaultEnvironment
 
@@ -126,25 +126,32 @@ if not env.BoardConfig().get("build.ldscript", ""):
         LDSCRIPT_PATH=join(FRAMEWORK_DIR, "ld", "eagle.app.v6.ld")
     )
 
-board_flash_size = int(env.BoardConfig().get("upload.maximum_size", 0))
-if board_flash_size > 8388608:
-    init_data_flash_address = 0xffc000  # for 16 MB
-elif board_flash_size > 4194304:
-    init_data_flash_address = 0x7fc000  # for 8 MB
-elif board_flash_size > 2097152:
-    init_data_flash_address = 0x3fc000  # for 4 MB
-elif board_flash_size > 1048576:
-    init_data_flash_address = 0x1fc000  # for 2 MB
-elif board_flash_size > 524288:
-    init_data_flash_address = 0xfc000  # for 1 MB
-else:
-    init_data_flash_address = 0x7c000  # for 512 kB
+# evaluate SPI_FLASH_SIZE_MAP flag for NONOS_SDK 3.x and set CCFLAG
+board_flash_size = int(env.BoardConfig().get("upload.maximum_size", 524288))
+flash_size_maps = [0.5, 0.25, 1.0, 0.0, 0.0, 2.0, 4.0, 0.0, 8.0, 16.0]  # ignore maps 3 and 4.prefer 5 and 6
+flash_sizes_str = ['512KB','256KB','1MB','2MB','4MB','2MB-c1','4MB-c1','4MB-c2','8MB','16MB']
+try:
+    flash_size_map = flash_size_maps.index(board_flash_size/1048576)
+    flash_size_str = flash_sizes_str[flash_size_map]
+except:
+    flash_size_map = 6
+    flash_size_str = '4MB-c1'
+# for OTA, only size maps 5, 6, 8 and 9 are supported to avoid linking twice for user1 and user2
+
+env.Append(CCFLAGS=["-DSPI_FLASH_SIZE_MAP="+str(flash_size_map)])     # NONOS-SDK 3.x user_main.c need it
+
+init_data_flash_address  = board_flash_size-0x4000     # 3fc000 for 4M board data_bin
+
+
+esp_init_data_default_file = "esp_init_data_default_v08.bin"       # new in NONS 3.04
+if not isfile(join(FRAMEWORK_DIR, "bin", esp_init_data_default_file)):
+    esp_init_data_default_file = "esp_init_data_default.bin"
 
 env.Append(
     FLASH_EXTRA_IMAGES=[
         ("0x10000", join("$BUILD_DIR", "${PROGNAME}.bin.irom0text.bin")),
         (hex(init_data_flash_address),
-            join(FRAMEWORK_DIR, "bin", "esp_init_data_default.bin")),
+            join(FRAMEWORK_DIR, "bin", esp_init_data_default_file)),
         (hex(init_data_flash_address + 0x2000),
             join(FRAMEWORK_DIR, "bin", "blank.bin"))
     ]
