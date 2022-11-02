@@ -106,28 +106,7 @@ env.Append(
         "cirom", "crypto", "driver", "espconn", "espnow", "freertos", "gcc",
         "json", "hal", "lwip", "main", "mbedtls", "mesh", "mirom", "net80211", "nopoll",
         "phy", "pp", "pwm", "smartconfig", "spiffs", "ssl", "wpa", "wps"
-    ],
-
-    BUILDERS=dict(
-        ElfToBin=Builder(
-            action=env.VerboseAction(" ".join([
-                '"%s"' % join(platform.get_package_dir("tool-esptool"), "esptool"),
-                "-eo", "$SOURCE",
-                "-bo", "${TARGET}",
-                "-bm", "$BOARD_FLASH_MODE",
-                "-bf", "${__get_board_f_flash(__env__)}",
-                "-bz", "${__get_flash_size(__env__)}",
-                "-bs", ".text",
-                "-bs", ".data",
-                "-bs", ".rodata",
-                "-bc", "-ec",
-                "-eo", "$SOURCE",
-                "-es", ".irom0.text", "${TARGET}.irom0text.bin",
-                "-ec", "-v"
-            ]), "Building $TARGET"),
-            suffix=".bin"
-        )
-    )
+    ]
 )
 
 

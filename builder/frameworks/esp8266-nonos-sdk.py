@@ -97,28 +97,7 @@ env.Append(
         "airkiss", "at", "c", "crypto", "driver", "espnow", "gcc", "json",
         "lwip", "main", "mbedtls", "net80211", "phy", "pp", "pwm",
         "smartconfig", "ssl", "upgrade", "wpa", "wpa2", "wps"
-    ],
-
-    BUILDERS=dict(
-        ElfToBin=Builder(
-            action=env.VerboseAction(" ".join([
-                '"%s"' % join(platform.get_package_dir("tool-esptool"), "esptool"),
-                "-eo", "$SOURCE",
-                "-bo", "${TARGET}",
-                "-bm", "$BOARD_FLASH_MODE",
-                "-bf", "${__get_board_f_flash(__env__)}",
-                "-bz", "${__get_flash_size(__env__)}",
-                "-bs", ".text",
-                "-bs", ".data",
-                "-bs", ".rodata",
-                "-bc", "-ec",
-                "-eo", "$SOURCE",
-                "-es", ".irom0.text", "${TARGET}.irom0text.bin",
-                "-ec", "-v"
-            ]), "Building $TARGET"),
-            suffix=".bin"
-        )
-    )
+    ]
 )
 
 
