@@ -25,6 +25,7 @@ from os.path import isdir, join, isfile
 from SCons.Script import Builder, DefaultEnvironment
 
 env = DefaultEnvironment()
+SConscript("_embed_files.py", exports="env")
 platform = env.PioPlatform()
 
 FRAMEWORK_DIR = platform.get_package_dir("framework-esp8266-nonos-sdk")
