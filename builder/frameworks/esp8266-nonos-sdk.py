@@ -103,7 +103,6 @@ env.Append(
 
 ###################################################################################
 # OTA support
-# common code between esp8266-nonos-sdk and esp8266-rtos-sdk for OTA support
 
 board = env.BoardConfig()
 partitions_csv = board.get("build.partitions", "partitions_singleapp.csv")
@@ -142,10 +141,7 @@ if "ota" in partitions_csv:     # if OTA, flash user1 but generate user1 and use
 else:                           # non ota
     boot_bin  = join("$BUILD_DIR", "${PROGNAME}.bin")                # firmware.bin # eagle.flash.bin
     user_bin  = join("$BUILD_DIR", "${PROGNAME}.bin.irom0text.bin")  # firmware.bin.irom0text.bin # eagle.irom0text.bin
-    if (env['PIOFRAMEWORK'][0] == "esp8266-rtos-sdk"):
-        user_addr = 0x20000
-    else:
-        user_addr = 0x10000
+    user_addr = 0x10000
 
 
 # check the init_data_default file to use
