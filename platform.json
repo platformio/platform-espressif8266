@@ -55,13 +55,13 @@
       "type": "framework",
       "optional": true,
       "owner": "platformio",
-      "version": ">=1.5.0-beta"
+      "version": "==1.5.0-beta.5"
     },
     "framework-esp8266-nonos-sdk": {
       "type": "framework",
       "optional": true,
       "owner": "platformio",
-      "version": ">=2.1.0"
+      "version": "~3.0.5"
     },
     "tool-esptool": {
       "type": "uploader",
