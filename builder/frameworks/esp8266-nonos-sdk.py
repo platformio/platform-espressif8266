@@ -175,7 +175,7 @@ if "ota" in partitions_csv:     # if OTA, flash user1 but generate user1 and use
         BUILDERS=dict(
             ElfToBin=Builder(
                 action=env.VerboseAction(" ".join([
-                    '"%s"' % env.subst("$PYTHONEXE"), join(platform.get_package_dir("tool-genbin"), "genbin.py"),
+                    '"%s"' % env.subst("$PYTHONEXE"), join(platform.get_package_dir("tool-genbin-esp8266"), "genbin.py"),
                     "12",       # create firmware.bin.user1.bin and firmware.bin.user2.bin
                     "$BOARD_FLASH_MODE", "${__get_board_f_flash(__env__)}m", "$FLASH_SIZE_STR",
                     "$SOURCE", "${TARGET}.user1.bin", "${TARGET}.user2.bin"
@@ -190,7 +190,7 @@ else:
         BUILDERS=dict(
             ElfToBin=Builder(
                 action=env.VerboseAction(" ".join([
-                    '"%s"' % env.subst("$PYTHONEXE"), join(platform.get_package_dir("tool-genbin"), "genbin.py"),
+                    '"%s"' % env.subst("$PYTHONEXE"), join(platform.get_package_dir("tool-genbin-esp8266"), "genbin.py"),
                     "0",        # create firmware.bin and firmware.bin.irom0text.bin
                     "$BOARD_FLASH_MODE", "${__get_board_f_flash(__env__)}m", "$FLASH_SIZE_STR",
                     "$SOURCE", "${TARGET}", "${TARGET}.irom0text.bin"

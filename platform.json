@@ -63,7 +63,7 @@
       "owner": "platformio",
       "version": "~3.0.5"
     },
-    "tool-genbin": {
+    "tool-genbin-esp8266": {
       "type": "uploader",
       "owner": "platformio",
       "version": "~1.0.0"
