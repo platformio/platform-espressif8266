@@ -1,7 +1,7 @@
 {
   "build": {
     "arduino": {
-      "ldscript": "eagle.flash.4m1m.ld"
+      "ldscript": "eagle.flash.2m1m.ld"
     },
     "core": "esp8266",
     "extra_flags": "-DESP8266 -DARDUINO_ARCH_ESP8266 -DARDUINO_ESP8266_AGRUMINO_LEMON_V4",
@@ -22,11 +22,11 @@
   "name": "Lifely Agrumino Lemon v4",
   "upload": {
     "maximum_ram_size": 81920,
-    "maximum_size": 4194304,
+    "maximum_size": 2097152,
     "require_upload_port": true,
     "resetmethod": "nodemcu",
     "speed": 115200
   },
-  "url": "https://www.lifely.cc/lifely-3-0/",
-  "vendor": "Lifely"
+  "url": "https://www.lifely.cc/",
+  "vendor": "Lifely.cc"
 }
