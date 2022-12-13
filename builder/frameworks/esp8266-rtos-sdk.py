@@ -569,6 +569,7 @@ def generate_project_ld_script(sdk_config, ignore_targets=None):
         '--objdump "{objdump}"'
     ).format(**args)
 
+    os.environ["IDF_PATH"] = FRAMEWORK_DIR
     return env.Command(
         os.path.join("$BUILD_DIR", "esp8266.project.ld"),
         os.path.join(
