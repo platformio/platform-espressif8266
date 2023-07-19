@@ -17,7 +17,7 @@
     "type": "git",
     "url": "https://github.com/platformio/platform-espressif8266.git"
   },
-  "version": "4.2.0",
+  "version": "4.2.1",
   "frameworks": {
     "arduino": {
       "package": "framework-arduinoespressif8266",
@@ -42,7 +42,7 @@
     "toolchain-xtensa": {
       "type": "toolchain",
       "owner": "platformio",
-      "version": "~2.100300.0",
+      "version": "~2.100300.220621",
       "optionalVersions": ["~1.40802.0"]
     },
     "framework-arduinoespressif8266": {
