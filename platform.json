@@ -42,7 +42,7 @@
     "toolchain-xtensa": {
       "type": "toolchain",
       "owner": "platformio",
-      "version": "~2.100300.0",
+      "version": "~2.100300.220621",
       "optionalVersions": ["~1.40802.0"]
     },
     "framework-arduinoespressif8266": {
