@@ -27,6 +27,6 @@
     "resetmethod": "nodemcu",
     "speed": 115200
   },
-  "url": "https://wiki.wemos.cc/products:d1:d1_mini",
+  "url": "https://www.wemos.cc/en/latest/d1/d1_mini.html",
   "vendor": "WEMOS"
 }
