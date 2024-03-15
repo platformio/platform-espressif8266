@@ -33,6 +33,9 @@ def _get_board_f_flash(env):
     frequency = str(frequency).replace("L", "")
     return int(int(frequency) / 1000000)
 
+def _get_board_flash_mode(env):
+    mode = env.subst("$BOARD_FLASH_MODE")
+    return mode
 
 def _parse_size(value):
     if isinstance(value, int):
@@ -149,6 +152,7 @@ filesystem = board.get("build.filesystem", "spiffs")
 env.Replace(
     __get_flash_size=_get_flash_size,
     __get_board_f_flash=_get_board_f_flash,
+    __get_board_flash_mode=_get_board_flash_mode,
 
     AR="xtensa-lx106-elf-ar",
     AS="xtensa-lx106-elf-as",
@@ -182,12 +186,21 @@ env.Replace(
         "--chip", "esp8266",
         "--port", '"$UPLOAD_PORT"'
     ],
+    ESPTOOL=join(
+        platform.get_package_dir("tool-esptoolpy") or "", "esptool.py"),
     ERASETOOL=join(
         platform.get_package_dir("tool-esptoolpy") or "", "esptool.py"),
     ERASECMD='"$PYTHONEXE" "$ERASETOOL" $ERASEFLAGS erase_flash',
 
     PROGSUFFIX=".elf"
 )
+
+if "esp8266-rtos-sdk" in env.subst("$PIOFRAMEWORK"):
+    env.Replace(
+#       OBJCOPY=join(platform.get_package_dir("tool-esptoolpy") or "", "esptool.py")
+       OBJCOPY=join(platform.get_package_dir("framework-esp8266-rtos-sdk"), "components", "esptool_py", "esptool", "esptool.py"), #"xtensa-lx106-elf-objcopy",
+    )
+
 
 # Allow user to override via pre:script
 if env.get("PROGNAME", "program") == "program":
@@ -312,10 +325,9 @@ if upload_protocol == "espota":
         env.Append(UPLOADERFLAGS=["-s"])
     upload_actions = [env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")]
 
-elif upload_protocol == "esptool":
+elif upload_protocol == "esptool" and not "esp8266-rtos-sdk" in env.subst("$PIOFRAMEWORK"):
     env.Replace(
-        UPLOADER=join(
-            platform.get_package_dir("tool-esptoolpy") or "", "esptool.py"),
+        UPLOADER="$ESPTOOL",
         UPLOADERFLAGS=[
             "--chip", "esp8266",
             "--port", '"$UPLOAD_PORT"',
@@ -325,6 +337,10 @@ elif upload_protocol == "esptool":
         UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS 0x0 $SOURCE'
     )
     for image in env.get("FLASH_EXTRA_IMAGES", []):
+        if image[0]=='0x0':        # a bootloader is furnished. clean the UPLOADCMD
+            env.Replace(
+                UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS'
+            )
         env.Append(UPLOADERFLAGS=[image[0], env.subst(image[1])])
 
     if "uploadfs" in COMMAND_LINE_TARGETS:
@@ -342,6 +358,48 @@ elif upload_protocol == "esptool":
     env.Prepend(
         UPLOADERFLAGS=get_esptoolpy_reset_flags(env.subst("$UPLOAD_RESETMETHOD"))
     )
+
+    upload_actions = [
+        env.VerboseAction(env.AutodetectUploadPort,
+                          "Looking for upload port..."),
+        env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")
+    ]
+
+elif upload_protocol == "esptool" and "esp8266-rtos-sdk" in env.subst("$PIOFRAMEWORK"):
+    env.Replace(
+        UPLOADER="$ESPTOOL",
+#            platform.get_package_dir("tool-esptoolpy") or "", "esptool.py"),
+        UPLOADERFLAGS=[
+            "--chip", "esp8266",
+            "--port", '"$UPLOAD_PORT"',
+            "--baud", "$UPLOAD_SPEED",
+            "--before", "default_reset",
+            "--after", "hard_reset",
+            "write_flash", "-z",
+            "--flash_mode", "${__get_board_flash_mode(__env__)}",
+            "--flash_freq", "${__get_board_f_flash(__env__)}m",
+            "--flash_size", "detect"
+        ],
+        UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS 0x10000 $SOURCE'
+    )
+    for image in env.get("FLASH_EXTRA_IMAGES", []):
+        env.Append(UPLOADERFLAGS=[image[0], env.subst(image[1])])
+
+    if "uploadfs" in COMMAND_LINE_TARGETS:
+        env.Replace(
+            UPLOADERFLAGS=[
+                "--chip", mcu,
+                "--port", '"$UPLOAD_PORT"',
+                "--baud", "$UPLOAD_SPEED",
+                "--before", "default_reset",
+                "--after", "hard_reset",
+                "write_flash", "-z",
+                "--flash_mode", "$BOARD_FLASH_MODE",
+                "--flash_size", "detect",
+                "$SPIFFS_START"
+            ],
+            UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS $SOURCE',
+        )
 
     upload_actions = [
         env.VerboseAction(env.AutodetectUploadPort,

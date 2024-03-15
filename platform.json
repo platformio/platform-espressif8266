@@ -55,13 +55,18 @@
       "type": "framework",
       "optional": true,
       "owner": "platformio",
-      "version": ">=1.5.0-beta"
+      "version": "~3.4"
     },
     "framework-esp8266-nonos-sdk": {
       "type": "framework",
       "optional": true,
       "owner": "platformio",
-      "version": ">=2.1.0"
+      "version": "~3.0.5"
+    },
+    "tool-genbin-esp8266": {
+      "type": "uploader",
+      "owner": "platformio",
+      "version": "~1.0.0"
     },
     "tool-esptool": {
       "type": "uploader",
@@ -84,6 +89,16 @@
       "optional": true,
       "owner": "platformio",
       "version": "~1.203.0"
+    },
+    "tool-cmake": {
+      "optional": true,
+      "owner": "platformio",
+      "version": "~3.16.0"
+    },
+    "tool-ninja": {
+      "optional": true,
+      "owner": "platformio",
+      "version": "^1.7.0"
     }
   }
 }
