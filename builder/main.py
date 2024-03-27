@@ -259,9 +259,6 @@ if env.get("PIOMAINPROG"):
         env.VerboseAction(
             lambda source, target, env: _update_max_upload_size(env),
             "Retrieving maximum program size $SOURCE"))
-# remove after PIO Core 3.6 release
-elif set(["checkprogsize", "upload"]) & set(COMMAND_LINE_TARGETS):
-    _update_max_upload_size(env)
 
 #
 # Target: Print binary size
