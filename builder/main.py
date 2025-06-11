@@ -149,6 +149,13 @@ platform = env.PioPlatform()
 board = env.BoardConfig()
 filesystem = board.get("build.filesystem", "spiffs")
 
+if "esp8266-rtos-sdk" in env.subst("$PIOFRAMEWORK"):
+    sizeprogregex=r"^(?:\.iram0\.text|\.iram0\.vectors|\.dram0\.data|\.flash\.text|\.flash\.rodata|)\s+([0-9]+).*"
+    sizedataregex=r"^(?:\.dram0\.data|\.dram0\.bss|\.noinit)\s+([0-9]+).*"
+else:
+    sizeprogregex=r"^(?:\.irom0\.text|\.text|\.text1|\.data|\.rodata|)\s+([0-9]+).*"
+    sizedataregex=r"^(?:\.data|\.rodata|\.bss)\s+([0-9]+).*"
+
 env.Replace(
     __get_flash_size=_get_flash_size,
     __get_board_f_flash=_get_board_f_flash,
@@ -177,8 +184,9 @@ env.Replace(
     # Misc
     #
 
-    SIZEPROGREGEXP=r"^(?:\.irom0\.text|\.text|\.text1|\.data|\.rodata|)\s+([0-9]+).*",
-    SIZEDATAREGEXP=r"^(?:\.data|\.rodata|\.bss)\s+([0-9]+).*",
+    SIZEPROGREGEXP=sizeprogregex,
+    SIZEDATAREGEXP=sizedataregex,
+    
     SIZECHECKCMD="$SIZETOOL -A -d $SOURCES",
     SIZEPRINTCMD='$SIZETOOL -B -d $SOURCES',
 
@@ -191,6 +199,8 @@ env.Replace(
     ERASETOOL=join(
         platform.get_package_dir("tool-esptoolpy") or "", "esptool.py"),
     ERASECMD='"$PYTHONEXE" "$ERASETOOL" $ERASEFLAGS erase_flash',
+
+    ESP8266_APP_OFFSET=board.get("upload.offset_address", "0x10000"),
 
     PROGSUFFIX=".elf"
 )
@@ -380,7 +390,7 @@ elif upload_protocol == "esptool" and "esp8266-rtos-sdk" in env.subst("$PIOFRAME
             "--flash_freq", "${__get_board_f_flash(__env__)}m",
             "--flash_size", "detect"
         ],
-        UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS 0x10000 $SOURCE'
+        UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS $ESP8266_APP_OFFSET $SOURCE'
     )
     for image in env.get("FLASH_EXTRA_IMAGES", []):
         env.Append(UPLOADERFLAGS=[image[0], env.subst(image[1])])

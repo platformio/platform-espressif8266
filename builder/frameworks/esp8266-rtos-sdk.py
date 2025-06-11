@@ -1365,3 +1365,18 @@ if ota_partition_params["size"] and ota_partition_params["offset"]:
             )
         ]
     )
+
+#
+# Configure application partition offset
+#
+
+env.Replace(
+    ESP8266_APP_OFFSET=get_app_partition_offset(
+        env.subst("$PARTITIONS_TABLE_CSV"), partition_table_offset
+    )
+)
+
+# Propagate application offset to debug configurations
+env["INTEGRATION_EXTRA_DATA"].update(
+    {"application_offset": env.subst("$ESP8266_APP_OFFSET")}
+)
