@@ -99,20 +99,45 @@ def fetch_fs_size(env):
         k in env
         for k in ["FS_START", "FS_END", "FS_PAGE", "FS_BLOCK"]
     ])
+    
+# https://github.com/platformio/platform-espressif8266/issues/190
+# https://community.platformio.org/t/fail-to-create-littlefs-on-d1-mini-pro-board/16539
+    
+    # esptool flash starts from 0
+    for k in ("FS_START", "FS_END"):
+        print("k = %s, value = %s" % (k, hex(env[k])))
+    
+    k_start = "FS_START"
+    _value = 0
+    if env[k_start] < 0x40300000:
+        _value = env[k_start] & 0xFFFFF
+    elif env[k_start] < 0x411FB000:
+        _value = env[k_start] & 0xFFFFFF
+        _value -= 0x200000  # correction
+    else:
+        _value = env[k_start] & 0xFFFFFF
+        _value += 0xE00000  # correction
+
+    k_end = "FS_END"
+    env[k_end] = env[k_end] - env[k_start] + _value
+    env[k_start] = _value
 
     # esptool flash starts from 0
     for k in ("FS_START", "FS_END"):
-        _value = 0
-        if env[k] < 0x40300000:
-            _value = env[k] & 0xFFFFF
-        elif env[k] < 0x411FB000:
-            _value = env[k] & 0xFFFFFF
-            _value -= 0x200000  # correction
-        else:
-            _value = env[k] & 0xFFFFFF
-            _value += 0xE00000  # correction
-
-        env[k] = _value
+        print("new = %s, value = %s" % (k, hex(env[k])))
+        
+#        _value = 0
+#        if env[k] < 0x40300000:
+#            _value = env[k] & 0xFFFFF
+#        elif env[k] < 0x411FB000:
+#            _value = env[k] & 0xFFFFFF
+#            _value -= 0x200000  # correction
+#        else:
+#            _value = env[k] & 0xFFFFFF
+#            _value += 0xE00000  # correction
+#
+#        env[k] = _value
+#        print("neu = %s, value = %s" % (k, hex(_value)))
 
 
 def __fetch_fs_size(target, source, env):
