@@ -29,7 +29,7 @@
     "maximum_ram_size": 81920,
     "maximum_size": 1048576,
     "require_upload_port": true,
-    "resetmethod": "ck",
+    "resetmethod": "nodemcu",
     "speed": 115200
   },
   "url": "https://arduino-esp8266.readthedocs.io/en/latest/boards.html#doit-esp-mx-devkit-esp8285",
