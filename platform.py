@@ -13,17 +13,22 @@
 # limitations under the License.
 
 from platformio.public import PlatformBase
-
+import sys
 
 class Espressif8266Platform(PlatformBase):
 
     def configure_default_packages(self, variables, targets):
         framework = variables.get("pioframework", [])
-        if "arduino" not in framework:
-            self.packages['toolchain-xtensa']['version'] = "~1.40802.0"
         if "buildfs" in targets:
             self.packages['tool-mkspiffs']['optional'] = False
             self.packages['tool-mklittlefs']['optional'] = False
+        if "esp8266-rtos-sdk" in framework:
+            self.packages['toolchain-xtensa']['version'] = '~8.4.0'
+            for p in self.packages:
+                if p in ('tool-cmake', 'tool-ninja'):
+                    self.packages[p]['optional'] = False
+                elif p in ('tool-mconf') and sys.platform.startswith("win"):
+                    self.packages[p]['optional'] = False
         return super().configure_default_packages(variables, targets)
 
     def get_boards(self, id_=None):

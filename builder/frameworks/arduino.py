@@ -26,6 +26,8 @@ from os.path import join
 
 from SCons.Script import COMMAND_LINE_TARGETS, DefaultEnvironment, SConscript
 
+env = DefaultEnvironment()
+SConscript("_embed_files.py", exports="env")
 
 if "nobuild" not in COMMAND_LINE_TARGETS:
     SConscript(
