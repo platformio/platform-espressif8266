@@ -84,6 +84,11 @@
       "optional": true,
       "owner": "platformio",
       "version": "~1.203.0"
+    },
+    "tool-cmake": {
+      "optional": true,
+      "owner": "platformio",
+      "version": "~3.16.0"
     }
   }
 }
